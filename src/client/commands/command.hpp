@@ -13,13 +13,11 @@ class Command
 
         ~Command();
 
-        // sends data to Auction Server
         virtual void send() = 0;
-
-        // receives data from Auction Server
         virtual void receive() = 0;
-
         virtual int execute();
+
+        
 };
 
 #endif // CLIENT_COMMAND_H
