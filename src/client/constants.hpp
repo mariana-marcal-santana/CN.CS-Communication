@@ -16,6 +16,9 @@
 #define EXIT "exit"
 #define DEBUG "debug"
 
+#define UDP 1
+#define TCP 2
+
 #define INVALID_COMMAND_MSG "Invalid command"
 
 #endif
