@@ -1,5 +1,11 @@
 #include "commandHandler.hpp"
 #include "commands/udp/start.hpp"
+#include "commands/udp/try.hpp"
+#include "commands/tcp/showtrials.hpp"
+#include "commands/tcp/scoreboard.hpp"
+#include "commands/udp/exit.hpp"
+#include "commands/udp/quit.hpp"
+#include "commands/udp/debug.hpp"
 
 Command* CommandHandler::createCommand(const std::string &input) {
 

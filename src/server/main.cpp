@@ -64,7 +64,7 @@ int main (int argc, char *argv[]) {
         testfds = inputs;
         out_fds = select(FD_SETSIZE, &testfds, (fd_set *) NULL, (fd_set *) NULL, (struct timeval *) &timeout);
 
-        switch(out_fds) {
+        switch (out_fds) {
             case 0:
                 printf("Timeout\n");
                 break;

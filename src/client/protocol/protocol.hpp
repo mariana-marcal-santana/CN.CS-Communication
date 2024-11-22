@@ -1,5 +1,5 @@
-#ifndef NETWORK_CLIENT_H
-#define NETWORK_CLIENT_H
+#ifndef PROTOCOL_H
+#define PROTOCOL_H
 
 #include <string>
 
@@ -11,9 +11,9 @@
 
 #include "../constants.hpp"
 
-class NetworkClient {
+class Client {
     public:
-        ~NetworkClient();
+        ~Client();
         virtual int sendData(const std::string& data) = 0;
         virtual std::string receiveData() = 0;
 
@@ -25,15 +25,7 @@ class NetworkClient {
         struct sockaddr_in serverAddr;
 };
 
-class UDPClient : public NetworkClient {
-    public:
-        UDPClient(std::string serverIP, int serverPort);
-        ~UDPClient();
-        int sendData(const std::string& data) override;
-        std::string receiveData() override;
-};
-
-class UDPClient : public NetworkClient {
+class UDPClient : public Client {
     public:
         UDPClient(std::string serverIP, int serverPort);
         int sendData(const std::string& data) override;
@@ -44,7 +36,7 @@ class UDPClient : public NetworkClient {
         //bool verbose = TCP_VERBOSE;
 };
 
-class TCPClient : public NetworkClient {
+class TCPClient : public Client {
     public:
         TCPClient(std::string serverIP, int serverPort);
         int sendData(const std::string& data) override;

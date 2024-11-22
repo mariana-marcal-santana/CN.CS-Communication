@@ -2,19 +2,23 @@
 #define CLIENT_COMMAND_H
 
 #include <string>
+#include <memory>
+#include "../protocol/protocol.hpp"
 
 class Command
 {
     protected:
+        //ClientState* clientState;
+        std::unique_ptr<Client> Client;
         std::string command;
+        int networkType;
 
     public:
         Command(std::string command) 
             : command(command) {}
 
         Command(int networkType, std::string command) 
-            : //networkType(networkType), 
-            command(command) {}
+            : networkType(networkType), command(command) {}
 
         virtual ~Command() = default;
 

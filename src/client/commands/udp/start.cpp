@@ -2,7 +2,9 @@
 
 void StartCommand::send() {
     std::string dataToSend = this->formatData();
-    this->networkClient->sendData(dataToSend);
+    this->Client->sendData(dataToSend);
 }
-void receive() override;
-int execute() override;
+
+void StartCommand::receive() {}
+
+int StartCommand::execute() {}
