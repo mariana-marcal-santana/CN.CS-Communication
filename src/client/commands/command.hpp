@@ -22,9 +22,9 @@ class Command
 
         virtual ~Command() = default;
 
-        virtual void send() = 0;
+        void send();
         virtual void receive() = 0;
-        virtual int execute();
+        int execute();
         virtual std::string formatData() = 0;
 
         //void setClientState(ClientState* clientState);

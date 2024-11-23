@@ -8,6 +8,8 @@
 #include <arpa/inet.h> 
 #include <netinet/in.h> 
 #include <unistd.h>
+#include <iostream>
+#include <exception>
 
 #include "../constants.hpp"
 
@@ -16,13 +18,15 @@ class Client {
         ~Client();
         virtual int sendData(const std::string& data) = 0;
         virtual std::string receiveData() = 0;
+        int plid;
+        int tries;
+        bool hasStartedGame();
 
     protected:
         int sockfd = -1;
         std::string serverIP;
         int serverPort;
-
-        struct sockaddr_in serverAddr;
+        struct sockaddr_in serverAddr;        
 };
 
 class UDPClient : public Client {

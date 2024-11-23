@@ -2,6 +2,7 @@
 #define START_COMMAND_H
 
 #include "command.hpp"
+#include <iostream>
 
 class StartCommand : public Command {
 

@@ -2,20 +2,16 @@
 #define QUIT_COMMAND_H
 
 #include "../command.hpp"
+#include <sstream>
+#include <vector>
 
 class QuitCommand : public Command {
 
-    private:
-        std::string plid;
-        std::string max_playtime;
-
     public:
         QuitCommand() 
-            : Command(UDP, START) {};
+            : Command(UDP, QUIT) {};
 
-        void send() override;
         void receive() override;
-        int execute() override;
         std::string formatData() override;
 };
 

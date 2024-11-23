@@ -19,48 +19,23 @@ int main(int argc, char** argv) {
     while (!exit) {
 
         printf("\n> ");
-
         std::string input;
         getline(std::cin, input);
 
-        Command* command;
+        Command* command = CommandHandler::createCommand(input);
 
-        command = CommandHandler::createCommand(input);
+        command->setNetworkClient(serverIP, serverPort);
 
-        // There is no corresponding command for the input
-        // or the command format is invalid
+        //command->setClientState(&clientState);
+
         if (command == nullptr) {
-            printf("%s\n", INVALID_COMMAND_MSG);
+            perror(INVALID_COMMAND_MSG);
             continue;
         }
-
-        exit = command->execute();
-
-        // try {
-        //     command = CommandHandler::createCommand(input);
-
-        //     // There is no corresponding command for the input
-        //     // or the command format is invalid
-        //     if (command == nullptr) {
-        //         printf("%s\n", INVALID_COMMAND_MSG);
-        //         continue;
-        //     }
-
-        //     command->setNetworkClient(serverIP, serverPort);
-
-        //     command->setClientState(&clientState);
-
-        //     exit = command->execute();
-        // } catch (const CostumError& e) {
-        //     printf("%s\n", e.what());
-        // } catch (const exception& e) {
-        //     printf("%s\n", string(UNKNOW_ERROR_MSG).c_str());
-        // }
-
-        if (command != nullptr) {
-            delete command;
+        else { 
+            exit = command->execute();
+            delete command; 
         }
     }
-
     return 0;
 }

@@ -2,20 +2,16 @@
 #define EXIT_COMMAND_H
 
 #include "../command.hpp"
+#include <sstream>
+#include <vector>
 
 class ExitCommand : public Command {
 
-    private:
-        std::string plid;
-        std::string max_playtime;
-
     public:
         ExitCommand() 
-            : Command(UDP, START) {};
+            : Command(UDP, EXIT) {};
 
-        void send() override;
         void receive() override;
-        int execute() override;
         std::string formatData() override;
 };
 

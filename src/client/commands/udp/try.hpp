@@ -2,6 +2,9 @@
 #define TRY_COMMAND_H
 
 #include "command.hpp"
+#include <iostream>
+#include <sstream>
+#include <vector>
 
 class TryCommand : public Command {
 
@@ -15,9 +18,7 @@ class TryCommand : public Command {
         TryCommand(std::string C1, std::string C2, std::string C3, std::string C4) 
             : Command(UDP, START), C1(C1), C2(C2), C3(C3), C4(C4) {};
 
-        void send() override;
         void receive() override;
-        int execute() override;
         std::string formatData() override;
 };
 
