@@ -14,6 +14,7 @@
 #include <string.h>
 #include <errno.h>
 #include <signal.h>
+#include <string>
 
 #include "constants.hpp"
 

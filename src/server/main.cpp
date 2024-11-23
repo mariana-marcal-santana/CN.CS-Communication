@@ -2,6 +2,8 @@
 
 int main (int argc, char *argv[]) {
     
+    std::string serverPort = (argc > 1 && std::string(argv[1]) == PORT_FLAG) ? argv[2] : SERVER_PORT;
+
     int errcode, out_fds, ret, newfd;
     char buffer[BUFFER_SIZE], prt_str[90], 
         host[NI_MAXHOST], service[NI_MAXSERV];

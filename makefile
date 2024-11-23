@@ -12,10 +12,6 @@ SERVER_EXEC = ./server
 
 all: clean $(CLIENT_EXEC) $(SERVER_EXEC)
 
-user: clean-user $(CLIENT_EXEC)
-
-server: clean-server $(SERVER_EXEC)
-
 $(CLIENT_EXEC):
 	$(CXX) $(CXXFLAGS) $(CLIENT_SOURCES) -o $(CLIENT_EXEC)
 
