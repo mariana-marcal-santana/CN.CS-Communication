@@ -2,7 +2,7 @@
 
 void DebugCommand::receive() { // RDB status
 
-    std::string dataReceived = this->Client->receiveData();
+    std::string dataReceived = this->client->receiveData();
 
     std::istringstream iss(dataReceived);
     std::string arg;

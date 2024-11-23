@@ -2,7 +2,7 @@
 
 void TryCommand::receive() { // RTR status [nT nB nW][C1 C2 C3 C4]
 
-    std::string dataReceived = this->Client->receiveData();
+    std::string dataReceived = this->client->receiveData();
 
     std::istringstream iss(dataReceived);
     std::string arg;
@@ -17,7 +17,7 @@ void TryCommand::receive() { // RTR status [nT nB nW][C1 C2 C3 C4]
         if (args[3].find("4") != std::string::npos) {
             std::cout << "Game won!" << std::endl;
         }
-        else { this->Client->tries ++; }
+        else { this->client->tries ++; }
     }
     else if (args[1] == DUP) {
         std::cout << "Duplicate try." << std::endl;
@@ -42,6 +42,6 @@ void TryCommand::receive() { // RTR status [nT nB nW][C1 C2 C3 C4]
 }
 
 std::string TryCommand::formatData() {
-    return "TRY " + std::to_string(this->Client->plid) + " " + this->C1 + " " + this->C2 + 
-        " " + this->C3 + " " + this->C4 + " " + std::to_string(this->Client->tries) + "\0";
+    return "TRY " + std::to_string(this->client->plid) + " " + this->C1 + " " + this->C2 + 
+        " " + this->C3 + " " + this->C4 + " " + std::to_string(this->client->tries) + "\0";
 }

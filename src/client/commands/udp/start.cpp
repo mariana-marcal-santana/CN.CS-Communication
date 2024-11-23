@@ -2,7 +2,7 @@
 
 void StartCommand::receive() { // RSG status
 
-    std::string dataReceived = this->Client->receiveData();
+    std::string dataReceived = this->client->receiveData();
 
     if (dataReceived.find("OK") != std::string::npos) { 
         std::cout << "New game has started!" << std::endl;

@@ -26,7 +26,9 @@
 #define INV "INV"
 #define ENT "ENT"
 #define ETM "ETM"
-
+#define ACT "ACT"
+#define FIN "FIN"
+#define EMPTY "EMPTY"
 
 #define UDP 1
 #define TCP 2

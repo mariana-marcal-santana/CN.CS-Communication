@@ -2,7 +2,7 @@
 
 void ExitCommand::receive() { // RQT status [C1 C2 C3 C4]
 
-    std::string dataReceived = this->Client->receiveData();
+    std::string dataReceived = this->client->receiveData();
 
     std::istringstream iss(dataReceived);
     std::string arg;
@@ -24,5 +24,5 @@ void ExitCommand::receive() { // RQT status [C1 C2 C3 C4]
 }
 
 std::string ExitCommand::formatData() {
-    return "QUT " + std::to_string(this->Client->plid) + "\0";
+    return "QUT " + std::to_string(this->client->plid) + "\0";
 }   

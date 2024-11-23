@@ -1,7 +1,7 @@
 #ifndef TRY_COMMAND_H
 #define TRY_COMMAND_H
 
-#include "command.hpp"
+#include "../command.hpp"
 #include <iostream>
 #include <sstream>
 #include <vector>

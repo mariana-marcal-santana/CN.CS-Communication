@@ -1,19 +1,16 @@
 #ifndef SHOWTRIALS_COMMAND_HPP
 #define SHOWTRIALS_COMMAND_HPP
 
-#include "command.hpp"
+#include "../command.hpp"
+#include <sstream>
+#include <vector>
 
 class ShowTrialsCommand : public Command {
-
-    private:
-
     public:
         ShowTrialsCommand() 
             : Command(TCP, START) {};
 
-        void send() override;
         void receive() override;
-        int execute() override;
         std::string formatData() override;
 };
 

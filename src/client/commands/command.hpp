@@ -9,13 +9,11 @@ class Command
 {
     protected:
         //ClientState* clientState;
-        std::unique_ptr<Client> Client;
-        std::string command;
+        std::unique_ptr<Client> client;
         int networkType;
+        std::string command;        
 
     public:
-        Command(std::string command) 
-            : command(command) {}
 
         Command(int networkType, std::string command) 
             : networkType(networkType), command(command) {}
@@ -23,8 +21,8 @@ class Command
         virtual ~Command() = default;
 
         void send();
-        virtual void receive() = 0;
         int execute();
+        virtual void receive() = 0;
         virtual std::string formatData() = 0;
 
         //void setClientState(ClientState* clientState);

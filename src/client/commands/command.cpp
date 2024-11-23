@@ -8,17 +8,17 @@ int Command::execute() {
 
 void Command::send() {
     std::string dataToSend = this->formatData();
-    this->Client->sendData(dataToSend);
+    this->client->sendData(dataToSend);
 }
 
 void Command::setNetworkClient(std::string serverIp, int serverPort) {
     int networkType = this->networkType;
 
     if(networkType == UDP) {
-        this->Client = std::make_unique<UDPClient>(serverIp, serverPort);
+        this->client = std::make_unique<UDPClient>(serverIp, serverPort);
     }
 
     else if(networkType == TCP) {
-        this->Client = std::make_unique<TCPClient>(serverIp, serverPort);
+        this->client = std::make_unique<TCPClient>(serverIp, serverPort);
     }
 }
