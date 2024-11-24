@@ -1,9 +1,8 @@
 #include "command.hpp"
 
 void UDPCommand::send() {
-    printf("Sending data\n");
     std::string dataToSend = this->formatData();
-    printf("Sending data: %s\n", dataToSend.c_str());
+    printf("Sending data: %s", dataToSend.c_str());
     if (sendto(this->client->sockfd, dataToSend.c_str(), dataToSend.length(), 0,
         this->client->res->ai_addr, this->client->res->ai_addrlen) < 0) { 
         perror("Error sending data");
@@ -12,11 +11,11 @@ void UDPCommand::send() {
 }
 
 int UDPCommand::execute() {
-    printf("%s", "execUDP\n");
     this->send();
     this->receive();
+    printf("Received data: %s\n", this->data.c_str());
     this->handleReceive();
-    return 0;
+    return this->command == EXIT ? 1 : 0;
 }
 
 void UDPCommand::receive() {

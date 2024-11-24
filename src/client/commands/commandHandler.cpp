@@ -6,10 +6,6 @@ Command* CommandHandler::createCommand(std::vector<std::string> args) {
         return new StartCommand(args[1], args[2]);
     } 
     else if (args.size() == 5 && args[0] == TRY) {
-        printf("%s\n", args[1].c_str());
-        printf("%s\n", args[2].c_str());
-        printf("%s\n", args[3].c_str());
-        printf("%s\n", args[4].c_str());
         return new TryCommand(args[1], args[2], args[3], args[4]);
     } 
     else if (args.size() == 1 && (args[0] == SHOW_TRIALS || args[0] == ST)) {

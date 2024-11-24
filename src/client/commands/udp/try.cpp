@@ -2,8 +2,6 @@
 
 void TryCommand::handleReceive() { // RTR status [nT nB nW][C1 C2 C3 C4]
 
-    //std::string dataReceived = this->receive();
-
     std::istringstream iss(this->data);
     std::string arg;
     std::vector<std::string> args;
@@ -42,7 +40,6 @@ void TryCommand::handleReceive() { // RTR status [nT nB nW][C1 C2 C3 C4]
 }
 
 std::string TryCommand::formatData() {
-    printf("TRY %s %s %s %s %s %d\n", this->client->plid.c_str(), this->C1.c_str(), this->C2.c_str(), this->C3.c_str(), this->C4.c_str(), this->client->tries);
     return "TRY " + this->client->plid + " " + this->C1 + " " + this->C2 + 
         " " + this->C3 + " " + this->C4 + " " + std::to_string(this->client->tries) + "\n";
 }

@@ -2,8 +2,6 @@
 
 void StartCommand::handleReceive() { // RSG status
 
-    printf("Data received: %s\n", this->data.c_str());
-
     if (this->data.find("NOK") != std::string::npos) { 
         std::cout << "There's already an ongoing game for this PLID." << std::endl;
     } 

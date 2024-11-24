@@ -31,17 +31,14 @@ int main(int argc, char** argv) {
         while (iss >> arg) { args.push_back(arg); }
 
         Command* command = CommandHandler::createCommand(args);
-        printf("execmain1");
 
         if (command == nullptr) {
             printf("%s: check command requirements.\n", INVALID_COMMAND_MSG);
             continue;
         }
         else {
-            printf("execmain");
             if (args[0] == START) { client->plid = args[1]; }
-            if (args[0] == QUIT || args[0] == EXIT) { client->plid = ""; }
-            printf("%s\n", client->plid.c_str());
+
             command->client = std::unique_ptr<Client>(client);
             exit = command->execute();
             client = command->client.release();
