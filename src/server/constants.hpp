@@ -7,6 +7,6 @@
 #define BUFFER_SIZE 128
 #define BACKLOG 10
 
-#define SERVER_PORT "58000" // GN
+#define SERVER_PORT "58052"
 
 #endif

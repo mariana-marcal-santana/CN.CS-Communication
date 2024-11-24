@@ -1,10 +1,8 @@
 #include "quit.hpp"
 
-void QuitCommand::receive() { // RQT status [C1 C2 C3 C4]
+void QuitCommand::handleReceive() { // RQT status [C1 C2 C3 C4]
 
-    std::string dataReceived = this->client->receiveData();
-
-    std::istringstream iss(dataReceived);
+    std::istringstream iss(this->data);
     std::string arg;
     std::vector<std::string> args;
     while (iss >> arg) {
@@ -24,5 +22,5 @@ void QuitCommand::receive() { // RQT status [C1 C2 C3 C4]
 }
 
 std::string QuitCommand::formatData() {
-    return "QUT " + std::to_string(this->client->plid) + "\0";
+    return "QUT " + this->client->plid + "\n";
 }

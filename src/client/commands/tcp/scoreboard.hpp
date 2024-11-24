@@ -5,12 +5,12 @@
 #include <sstream>
 #include <vector>
 
-class ScoreboardCommand : public Command {
+class ScoreboardCommand : public TCPCommand {
     public:
         ScoreboardCommand() 
-            : Command(TCP, START) {};
+            : TCPCommand(SCOREBOARD) {};
 
-        void receive() override;
+        void handleReceive() override;
         std::string formatData() override;
 };
 

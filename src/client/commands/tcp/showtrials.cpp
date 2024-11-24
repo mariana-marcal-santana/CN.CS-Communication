@@ -1,10 +1,8 @@
 #include "showtrials.hpp"
 
-void ShowTrialsCommand::receive() { // RST status [Fname Fsize Fdata]
+void ShowTrialsCommand::handleReceive() { // RST status [Fname Fsize Fdata]
 
-    std::string dataReceived = this->client->receiveData();
-
-    std::istringstream iss(dataReceived);
+    std::istringstream iss(this->data);
     std::string arg;
     std::vector<std::string> args;
     while (iss >> arg) {
@@ -23,5 +21,5 @@ void ShowTrialsCommand::receive() { // RST status [Fname Fsize Fdata]
 }
 
 std::string ShowTrialsCommand::formatData() {
-    return "STR " + std::to_string(this->client->plid) + "\0";
+    return "STR " + this->client->plid + "\n";
 }   

@@ -61,6 +61,8 @@ int main (int argc, char *argv[]) {
     
     timeout.tv_sec = 1000;
 
+    printf("Server is running\n");
+
     while (1) {
         
         testfds = inputs;

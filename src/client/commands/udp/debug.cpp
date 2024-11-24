@@ -1,10 +1,8 @@
 #include "debug.hpp"
 
-void DebugCommand::receive() { // RDB status
+void DebugCommand::handleReceive() { // RDB status
 
-    std::string dataReceived = this->client->receiveData();
-
-    std::istringstream iss(dataReceived);
+    std::istringstream iss(this->data);
     std::string arg;
     std::vector<std::string> args;
     while (iss >> arg) {
@@ -24,5 +22,5 @@ void DebugCommand::receive() { // RDB status
 
 std::string DebugCommand::formatData() {
     return "DBG " + this->plid + " " + this->max_playtime + " " + 
-        this->C1 + " " + this->C2 + " " + this->C3 + " " + this->C4 + "\0";
+        this->C1 + " " + this->C2 + " " + this->C3 + " " + this->C4 + "\n";
 }   

@@ -5,13 +5,13 @@
 #include <sstream>
 #include <vector>
 
-class QuitCommand : public Command {
+class QuitCommand : public UDPCommand {
 
     public:
         QuitCommand() 
-            : Command(UDP, QUIT) {};
+            : UDPCommand(QUIT) {};
 
-        void receive() override;
+        void handleReceive() override;
         std::string formatData() override;
 };
 

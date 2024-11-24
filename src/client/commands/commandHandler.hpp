@@ -13,19 +13,19 @@
 
 class CommandHandler {
 public:
-    static Command* createCommand(const std::string &input);
+    static Command* createCommand(std::vector<std::string> args);
 
 private:
     // UDP commands
-    static Command* commandStart(std::vector<std::string> args);
-    static Command* commandTry(std::vector<std::string> args);
-    static Command* commandExit(std::vector<std::string> args);
-    static Command* commandQuit(std::vector<std::string> args);
-    static Command* commandDebug(std::vector<std::string> args);
+    static bool verifCommandStart(std::vector<std::string> args);
+    static bool verifCommandTry(std::vector<std::string> args);
+    static bool verifCommandExit(std::vector<std::string> args);
+    static bool verifCommandQuit(std::vector<std::string> args);
+    static bool verifCommandDebug(std::vector<std::string> args);
 
     // TCP commands
-    static Command* commandShowTrials(std::vector<std::string> args);
-    static Command* commandScoreboard(std::vector<std::string> args);
+    static bool verifCommandShowTrials(std::vector<std::string> args);
+    static bool verifCommandScoreboard(std::vector<std::string> args);
 };
 
 #endif // CLIENT_COMMAND_HANLDER_H

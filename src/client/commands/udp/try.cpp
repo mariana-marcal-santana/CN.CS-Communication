@@ -1,10 +1,10 @@
 #include "try.hpp"
 
-void TryCommand::receive() { // RTR status [nT nB nW][C1 C2 C3 C4]
+void TryCommand::handleReceive() { // RTR status [nT nB nW][C1 C2 C3 C4]
 
-    std::string dataReceived = this->client->receiveData();
+    //std::string dataReceived = this->receive();
 
-    std::istringstream iss(dataReceived);
+    std::istringstream iss(this->data);
     std::string arg;
     std::vector<std::string> args;
     while (iss >> arg) {
@@ -42,6 +42,6 @@ void TryCommand::receive() { // RTR status [nT nB nW][C1 C2 C3 C4]
 }
 
 std::string TryCommand::formatData() {
-    return "TRY " + std::to_string(this->client->plid) + " " + this->C1 + " " + this->C2 + 
-        " " + this->C3 + " " + this->C4 + " " + std::to_string(this->client->tries) + "\0";
+    return "TRY " + this->client->plid + " " + this->C1 + " " + this->C2 + 
+        " " + this->C3 + " " + this->C4 + " " + std::to_string(this->client->tries) + "\n";
 }

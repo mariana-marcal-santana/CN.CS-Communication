@@ -1,10 +1,8 @@
 #include "scoreboard.hpp"
 
-void ScoreboardCommand::receive() { // RSS status [Fname Fsize Fdata]
+void ScoreboardCommand::handleReceive() { // RSS status [Fname Fsize Fdata]
 
-    std::string dataReceived = this->client->receiveData();
-
-    std::istringstream iss(dataReceived);
+    std::istringstream iss(this->data);
     std::string arg;
     std::vector<std::string> args;
     while (iss >> arg) {
@@ -20,5 +18,5 @@ void ScoreboardCommand::receive() { // RSS status [Fname Fsize Fdata]
 }
 
 std::string ScoreboardCommand::formatData() {
-    return "SSB\0";
+    return "SSB\n";
 }   

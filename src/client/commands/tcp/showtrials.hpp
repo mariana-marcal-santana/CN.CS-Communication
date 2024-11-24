@@ -5,12 +5,12 @@
 #include <sstream>
 #include <vector>
 
-class ShowTrialsCommand : public Command {
+class ShowTrialsCommand : public TCPCommand {
     public:
         ShowTrialsCommand() 
-            : Command(TCP, START) {};
+            : TCPCommand(SHOW_TRIALS) {};
 
-        void receive() override;
+        void handleReceive() override;
         std::string formatData() override;
 };
 

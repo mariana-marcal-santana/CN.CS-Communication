@@ -4,7 +4,7 @@
 #include "../command.hpp"
 #include <iostream>
 
-class StartCommand : public Command {
+class StartCommand : public UDPCommand {
 
     private:
         std::string plid;
@@ -12,9 +12,9 @@ class StartCommand : public Command {
 
     public:
         StartCommand(std::string plid, std::string max_playtime) 
-            : Command(UDP, START), plid(plid), max_playtime(max_playtime) {};
+            : UDPCommand(START), plid(plid), max_playtime(max_playtime) {};
 
-        void receive() override;
+        void handleReceive() override;
         std::string formatData() override;
 };
 

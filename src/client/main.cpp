@@ -1,18 +1,24 @@
 #include "main.hpp"
-#include "commands/commandHandler.hpp"
-#include <iostream>
 
 int main(int argc, char** argv) {
 
     std::string serverIP = SERVER_IP;
-    int serverPort = SERVER_PORT;
+    std::string serverPort = SERVER_PORT;
 
     for (int i = 0; i < argc; i++) {
 
         std::string flag = argv[i];
 
         if (flag == IP_FLAG) serverIP = argv[i + 1];
-        else if (flag == PORT_FLAG) serverPort = atoi(argv[i + 1]);
+        else if (flag == PORT_FLAG) serverPort = argv[i + 1];
+    }
+
+    std::string plid = "";
+
+    Client* client = new Client(plid, serverIP, serverPort);
+    if (client->setupConnection() == ERROR) {
+        perror("Error setting up connection");
+        exit(1);
     }
 
     int exit = 0;
@@ -21,18 +27,24 @@ int main(int argc, char** argv) {
         printf("\n> ");
         std::string input;
         getline(std::cin, input);
+        std::istringstream iss(input);
+        std::string arg;
+        std::vector<std::string> args;
+        while (iss >> arg) { args.push_back(arg); }
 
-        Command* command = CommandHandler::createCommand(input);
+        if (args[1] == START) { plid = args[1]; }
 
-        command->setNetworkClient(serverIP, serverPort);
+        Command* command = CommandHandler::createCommand(args);
 
-        //command->setClientState(&clientState);
+        if (args[1] == QUIT || args[1] == EXIT) { plid = ""; }
 
         if (command == nullptr) {
             perror(INVALID_COMMAND_MSG);
             continue;
         }
-        else { 
+        else {
+            command->client = std::unique_ptr<Client>(client);
+            printf("Executing command...\n");
             exit = command->execute();
             delete command; 
         }
