@@ -1,33 +1,30 @@
 #include "commandHandler.hpp"
-#include "udp/start.hpp"
-#include "udp/try.hpp"
-#include "tcp/showtrials.hpp"
-#include "tcp/scoreboard.hpp"
-#include "udp/exit.hpp"
-#include "udp/quit.hpp"
-#include "udp/debug.hpp"
 
 Command* CommandHandler::createCommand(std::vector<std::string> args) {
 
-    if (args[0] == START && args.size() == 3) {
+    if (args.size() == 3 && args[0] == START) {
         return new StartCommand(args[1], args[2]);
     } 
-    else if (args[0] == TRY && args.size() == 5) {
+    else if (args.size() == 5 && args[0] == TRY) {
+        printf("%s\n", args[1].c_str());
+        printf("%s\n", args[2].c_str());
+        printf("%s\n", args[3].c_str());
+        printf("%s\n", args[4].c_str());
         return new TryCommand(args[1], args[2], args[3], args[4]);
     } 
-    else if ((args[0] == SHOW_TRIALS || args[0] == ST) && args.size() == 1) {
+    else if (args.size() == 1 && (args[0] == SHOW_TRIALS || args[0] == ST)) {
         return new ShowTrialsCommand();
     } 
-    else if ((args[0] == SCOREBOARD || args[0] == SB) && args.size() == 1) {
+    else if (args.size() == 1 && (args[0] == SCOREBOARD || args[0] == SB)) {
         return new ScoreboardCommand();
     } 
-    else if (args[0] == QUIT) {
+    else if (args.size() == 1 && args[0] == QUIT) {
         return new QuitCommand();
     } 
-    else if (args[0] == EXIT) {
+    else if (args.size() == 1 && args[0] == EXIT) {
         return new ExitCommand();
     } 
-    else if (args[0] == DEBUG) {
+    else if (args.size() == 7 && args[0] == DEBUG) {
         return new DebugCommand(args[1], args[2], args[3], args[4], args[5], args[6]);
     } 
     return nullptr;

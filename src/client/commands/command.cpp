@@ -1,9 +1,9 @@
 #include "command.hpp"
 
 void UDPCommand::send() {
-
+    printf("Sending data\n");
     std::string dataToSend = this->formatData();
-
+    printf("Sending data: %s\n", dataToSend.c_str());
     if (sendto(this->client->sockfd, dataToSend.c_str(), dataToSend.length(), 0,
         this->client->res->ai_addr, this->client->res->ai_addrlen) < 0) { 
         perror("Error sending data");

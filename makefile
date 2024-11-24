@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra
+CXXFLAGS = -g -O0 -std=c++17 -Wall -Wextra
 
 CLIENT_DIR = src/client
 SERVER_DIR = src/server

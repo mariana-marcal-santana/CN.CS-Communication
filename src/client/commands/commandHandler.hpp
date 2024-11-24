@@ -5,6 +5,12 @@
 
 #include "command.hpp"
 #include "udp/start.hpp"
+#include "udp/try.hpp"
+#include "tcp/showtrials.hpp"
+#include "tcp/scoreboard.hpp"
+#include "udp/exit.hpp"
+#include "udp/quit.hpp"
+#include "udp/debug.hpp"
 
 #include <string>
 #include <vector>

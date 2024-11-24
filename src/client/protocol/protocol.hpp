@@ -18,7 +18,7 @@
 class Client {
     public:
         Client(std::string plid, std::string serverIP, std::string serverPort)
-            : plid(plid), serverIP(serverIP), serverPort(serverPort) {};
+            : plid(plid), tries(1), serverIP(serverIP), serverPort(serverPort) {};
         
         std::string plid;
         int tries;
@@ -26,6 +26,8 @@ class Client {
         int sockfd;
         struct addrinfo hints, *res;
         struct sockaddr_in addr;
+
+        ~Client();
 
     protected:
         std::string serverIP;

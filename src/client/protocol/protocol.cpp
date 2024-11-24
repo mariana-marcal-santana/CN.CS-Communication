@@ -1,5 +1,11 @@
 #include "protocol.hpp"
 
+Client::~Client(){
+    if(this->sockfd >= 0){
+        close(this->sockfd);
+    }
+}
+
 int Client::setupConnection() {
     printf("Creating client\n");
     this->sockfd = socket(AF_INET, SOCK_DGRAM, 0);
