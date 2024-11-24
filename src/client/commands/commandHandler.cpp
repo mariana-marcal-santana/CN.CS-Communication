@@ -9,45 +9,32 @@
 
 Command* CommandHandler::createCommand(std::vector<std::string> args) {
 
-    // create specific command
-    if (args[0] == START) {
-        if (CommandHandler::verifCommandStart(args)) {
-            printf("start\n");
-            return new StartCommand(args[1], args[2]);
-        }
+    if (args[0] == START && args.size() == 3) {
+        return new StartCommand(args[1], args[2]);
     } 
-    else if (args[0] == TRY) {
-        if (CommandHandler::verifCommandTry(args)) {
-            return new TryCommand(args[1], args[2], args[3], args[4]);
-        }
+    else if (args[0] == TRY && args.size() == 5) {
+        return new TryCommand(args[1], args[2], args[3], args[4]);
     } 
-    else if (args[0] == SHOW_TRIALS || args[0] == ST) {
-        if (CommandHandler::verifCommandShowTrials(args)) {
-            return new ShowTrialsCommand();
-        }
+    else if ((args[0] == SHOW_TRIALS || args[0] == ST) && args.size() == 1) {
+        return new ShowTrialsCommand();
     } 
-    else if (args[0] == SCOREBOARD || args[0] == SB) {
-        if (CommandHandler::verifCommandScoreboard(args)) {
-            return new ScoreboardCommand();
-        }
+    else if ((args[0] == SCOREBOARD || args[0] == SB) && args.size() == 1) {
+        return new ScoreboardCommand();
     } 
     else if (args[0] == QUIT) {
-        if (CommandHandler::verifCommandQuit(args)) {
-            return new QuitCommand();
-        }
+        return new QuitCommand();
     } 
     else if (args[0] == EXIT) {
-        if (CommandHandler::verifCommandExit(args)) {
-            return new ExitCommand();
-        }
+        return new ExitCommand();
     } 
     else if (args[0] == DEBUG) {
-        if (CommandHandler::verifCommandDebug(args)) {
-            return new DebugCommand(args[1], args[2], args[3], args[4], args[5], args[6]);
-        }
+        return new DebugCommand(args[1], args[2], args[3], args[4], args[5], args[6]);
     } 
     return nullptr;
 }
+
+
+// not in use
 
 bool CommandHandler::verifCommandStart(std::vector<std::string> args) {
 

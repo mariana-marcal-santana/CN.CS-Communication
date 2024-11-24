@@ -13,9 +13,7 @@ int main(int argc, char** argv) {
         else if (flag == PORT_FLAG) serverPort = argv[i + 1];
     }
 
-    std::string plid = "";
-
-    Client* client = new Client(plid, serverIP, serverPort);
+    Client* client = new Client("", serverIP, serverPort);
     if (client->setupConnection() == ERROR) {
         perror("Error setting up connection");
         exit(1);
@@ -32,22 +30,23 @@ int main(int argc, char** argv) {
         std::vector<std::string> args;
         while (iss >> arg) { args.push_back(arg); }
 
-        if (args[1] == START) { plid = args[1]; }
-
         Command* command = CommandHandler::createCommand(args);
 
-        if (args[1] == QUIT || args[1] == EXIT) { plid = ""; }
-
         if (command == nullptr) {
-            perror(INVALID_COMMAND_MSG);
+            printf("%s: check command requirements.\n", INVALID_COMMAND_MSG);
             continue;
         }
         else {
+            if (args[0] == START) { client->plid = args[1]; }
+            if (args[0] == QUIT || args[0] == EXIT) { client->plid = ""; }
+
             command->client = std::unique_ptr<Client>(client);
-            printf("Executing command...\n");
             exit = command->execute();
-            delete command; 
+            delete command;
         }
     }
+    freeaddrinfo(client->res);
+    close(client->sockfd);
+    delete client;
     return 0;
 }

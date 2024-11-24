@@ -3,7 +3,6 @@
 void UDPCommand::send() {
 
     std::string dataToSend = this->formatData();
-    printf("%s", dataToSend.c_str());
 
     if (sendto(this->client->sockfd, dataToSend.c_str(), dataToSend.length(), 0,
         this->client->res->ai_addr, this->client->res->ai_addrlen) < 0) { 
@@ -33,7 +32,7 @@ void UDPCommand::receive() {
 
     char buffer[128];
     socklen_t len = sizeof(this->client->addr);
-    int n = recvfrom(this->client->sockfd, buffer, 128, 0, (struct sockaddr*) &this->client->addr, &len);
+    int n = recvfrom(this->client->sockfd, buffer, 128, 0, (struct sockaddr*)&this->client->addr, &len);
 
     if(n < 0) {
         perror("Error receiving data");
@@ -50,9 +49,8 @@ void UDPCommand::receive() {
 void TCPCommand::send() {
 
     std::string dataToSend = this->formatData();
-    //printf("Sending data: %s\n", dataToSend.c_str());
 
-    if (write(this->client->sockfd, dataToSend.c_str(), dataToSend.length()) < 0) {
+    if (write(this->client->sockfd, dataToSend.c_str(), dataToSend.length()) == ERROR) {
         perror("Error sending data");
         exit(1);
     }
@@ -60,7 +58,10 @@ void TCPCommand::send() {
 
 int TCPCommand::execute() {
     printf("%s", "execTCP\n");
-    // connectttt
+    if (connect(this->client->sockfd, this->client->res->ai_addr, this->client->res->ai_addrlen) == ERROR) {
+        perror("Error connecting to server");
+        exit(1);
+    }
     this->send();
     this->receive();
     this->handleReceive();
