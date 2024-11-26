@@ -10,10 +10,10 @@ void ShowTrialsCommand::handleReceive() { // RST status [Fname Fsize Fdata]
     }
 
     if (args[1] == ACT) { 
-        std::cout << "Process file TODO" << std::endl;
+        std::cout << this->data << std::endl;
     } 
     else if (args[1] == FIN) {
-        std::cout << "Process file TODO" << std::endl;
+        std::cout << this->data << std::endl;
     }
     else if (args[1] == NOK) {
         std::cout << "There're no games for this player." << std::endl;

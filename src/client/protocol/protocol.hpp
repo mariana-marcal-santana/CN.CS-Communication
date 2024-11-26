@@ -21,16 +21,14 @@ class Client {
         
         std::string plid;
         int tries;
-        int setupConnection();
-        int sockfd;
-        struct addrinfo hints, *res;
-        struct sockaddr_in addr;
-
-        ~Client();
-
-    protected:
         std::string serverIP;
         std::string serverPort;
+        int setupConnection();
+        int udp_sockfd, tcp_sockfd;
+        struct addrinfo udp_hints, *udp_res, tcp_hints, *tcp_res;
+        struct sockaddr_in addr;
+
+        ~Client();        
 };
 
 #endif

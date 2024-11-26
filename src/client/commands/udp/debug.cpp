@@ -10,7 +10,7 @@ void DebugCommand::handleReceive() { // RDB status
     }
 
     if (args[1] == OK) { 
-        std::cout << "Debug game has started!" << arg << std::endl;
+        std::cout << "Debug game has started!" << std::endl;
     } 
     else if (args[1] == NOK) {
         std::cout << "There's an ongoing game for this PLID." << std::endl;

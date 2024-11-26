@@ -16,7 +16,7 @@ void QuitCommand::handleReceive() { // RQT status [C1 C2 C3 C4]
     else if (args[1] == NOK) {
         std::cout << "There isn't an ongoing game for this PLID." << std::endl;
     }
-    else if (args[1] == ERR) {
+    else if (args[1] == ERR) { // tamanho errado do comando
         std::cout << INVALID_COMMAND_MSG << std::endl;
     }
 }

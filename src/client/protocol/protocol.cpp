@@ -1,24 +1,27 @@
 #include "protocol.hpp"
 
 Client::~Client() {
-    if (this->sockfd >= 0) {
-        close(this->sockfd);
+    if (this->udp_sockfd >= 0) {
+        close(this->udp_sockfd);
+    }
+    if (this->tcp_sockfd >= 0) {
+        close(this->tcp_sockfd);
     }
 }
 
 int Client::setupConnection() {
 
-    this->sockfd = socket(AF_INET, SOCK_DGRAM, 0);
-    if (this->sockfd == ERROR) {
+    this->udp_sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    if (this->udp_sockfd == ERROR) {
         perror("Error creating socket");
         exit(1);
     }
 
-    memset(&hints, 0, sizeof(hints));
-    hints.ai_family = AF_INET;
-    hints.ai_socktype = SOCK_DGRAM;
+    memset(&udp_hints, 0, sizeof(udp_hints));
+    udp_hints.ai_family = AF_INET;
+    udp_hints.ai_socktype = SOCK_DGRAM;
 
-    if (getaddrinfo(serverIP.c_str(), serverPort.c_str(), &this->hints, &this->res) != 0) {
+    if (getaddrinfo(serverIP.c_str(), serverPort.c_str(), &this->udp_hints, &this->udp_res) != 0) {
         perror("Error getting address info");
         exit(1);
     }

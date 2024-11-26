@@ -13,7 +13,7 @@ void ScoreboardCommand::handleReceive() { // RSS status [Fname Fsize Fdata]
         std::cout << "No game has been won yet." << std::endl;
     } 
     else if (args[1] == OK) {
-        std::cout << "Process file TODO" << std::endl;
+        std::cout << this->data << std::endl;
     }
 }
 

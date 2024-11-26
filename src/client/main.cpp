@@ -38,6 +38,7 @@ int main(int argc, char** argv) {
         }
         else {
             if (args[0] == START) { client->plid = args[1]; }
+            printf("plid: %s\n", client->plid.c_str());
 
             command->client = std::unique_ptr<Client>(client);
             exit = command->execute();
@@ -45,8 +46,8 @@ int main(int argc, char** argv) {
             delete command;
         }
     }
-    freeaddrinfo(client->res);
-    close(client->sockfd);
+    freeaddrinfo(client->udp_res);
+    close(client->udp_sockfd);
     delete client;
     return 0;
 }
