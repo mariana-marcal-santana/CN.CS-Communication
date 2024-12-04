@@ -15,7 +15,11 @@
 #include <errno.h>
 #include <signal.h>
 #include <string>
+#include <iostream>
 
 #include "constants.hpp"
+#include "commands/command.hpp"
+#include "commands/commandHandler.hpp"
+#include "protocol/protocol.hpp"
 
 #endif
