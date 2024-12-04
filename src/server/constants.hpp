@@ -3,6 +3,9 @@
 
 #define PORT_FLAG "-p"
 
+#define DB_GAMES_PATH "../../../db/GAMES"
+#define DB_SCORES_PATH "../../../db/SCORES"
+
 #define ERROR -1
 #define INVALID_COMMAND_MSG "Invalid command"
 #define HAS_STARTED_GAME "You have already started a game"
@@ -20,11 +23,8 @@
 #define START "SNG"
 #define TRY "TRY"
 #define SHOW_TRIALS "show_trials"
-#define ST "st"
 #define SCOREBOARD "scoreboard"
-#define SB "sb"
-#define QUIT "QUT"
-#define EXIT "exit"
+#define QUIT_EXIT "QUT"
 #define DEBUG "DBG"
 
 #define OK "OK"

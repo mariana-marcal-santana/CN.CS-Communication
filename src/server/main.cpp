@@ -5,13 +5,15 @@ int main (int argc, char *argv[]) {
     std::string serverPort = (argc > 1 && std::string(argv[1]) == PORT_FLAG) ? argv[2] : SERVER_PORT;
 
     int errcode, out_fds, ret, newfd;
-    char buffer[BUFFER_SIZE], prt_str[90], 
+    char *ptr, buffer[BUFFER_SIZE], prt_str[90], 
         host[NI_MAXHOST], service[NI_MAXSERV];
     socklen_t addrlen;
     fd_set inputs, testfds;
     struct timeval timeout;
     struct addrinfo hints, *res;
     struct sockaddr_in udp_useraddr, tcp_useraddr;
+    pid_t pid;
+    ssize_t n, nw;
 
     memset(&hints, 0, sizeof hints);
     hints.ai_family = AF_INET;
@@ -92,7 +94,8 @@ int main (int argc, char *argv[]) {
                         errcode = getnameinfo((struct sockaddr *) &udp_useraddr, addrlen, host, sizeof host, service, sizeof service, 0);
 
                         Command* command = CommandHandler::createCommand(prt_str);
-                        command->send();
+                        command->execute();
+                        //command->send();
                         /*printf("UDP socket: %s\n", command->formatData());*/
 
                         if (errcode == 0)
@@ -109,17 +112,54 @@ int main (int argc, char *argv[]) {
                         exit(1);
                     }
 
-                    if ((ret = read(newfd, buffer, BUFFER_SIZE)) == ERROR) {
-                        perror("Read error");
+                    // fork
+                    if ((pid = fork()) == ERROR) {
+                        perror("Fork error");
                         exit(1);
                     }
+                    else if (pid == 0) {
+                        
+                        while (n != 0) {
+                            if (n = read(newfd, buffer, BUFFER_SIZE) == ERROR) {
+                                perror("Read error");
+                                exit(1);
+                            } 
+                        }
 
-                    if (write(1, buffer, ret) == ERROR) {
-                        perror("Write error");
-                        exit(1);
+                        std::string str(buffer);
+                        Command* command = CommandHandler::createCommand(str);
+
+                        if (command == nullptr) {
+                            str = "ERR\n";
+                        }
+                        else {
+                            str = command->execute();
+                            delete command;
+                        }
+
+                        ptr=&buffer[0];
+
+                        while (n > 0) {
+                            if ((nw = write(newfd, ptr, n)) <= 0) exit(1);
+                            n-=nw; 
+                            ptr+=nw;
+
+                        close(newfd); //???????
+                        }
                     }
+                    // read e write são com o newfd
 
-                    close(newfd);
+                    // if ((ret = read(newfd, buffer, BUFFER_SIZE)) == ERROR) {
+                    //     perror("Read error");
+                    //     exit(1);
+                    // }
+
+                    // if (write(1, buffer, ret) == ERROR) {
+                    //     perror("Write error");
+                    //     exit(1);
+                    // }
+
+                    // close(newfd);
                 }
         }
     }

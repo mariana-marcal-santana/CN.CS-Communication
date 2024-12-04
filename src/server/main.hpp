@@ -20,6 +20,6 @@
 #include "constants.hpp"
 #include "commands/command.hpp"
 #include "commands/commandHandler.hpp"
-#include "protocol/protocol.hpp"
+//#include "protocol/protocol.hpp"
 
 #endif
