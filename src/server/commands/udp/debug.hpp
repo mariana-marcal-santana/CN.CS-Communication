@@ -4,6 +4,9 @@
 #include "../command.hpp"
 #include <sstream>
 #include <vector>
+#include <iostream>
+#include <chrono>
+#include <iomanip>
 
 class DebugCommand : public UDPCommand {
 
