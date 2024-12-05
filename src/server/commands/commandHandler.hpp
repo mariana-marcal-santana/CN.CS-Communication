@@ -11,8 +11,8 @@
 #include "server/commands/udp/try.hpp"
 // #include "server/commands/udp/quit_exit.hpp"
 #include "server/commands/udp/debug.hpp"
-// #include "server/commands/tcp/showtrials.hpp"
-// #include "server/commands/tcp/scoreboard.hpp"
+#include "server/commands/tcp/showtrials.hpp"
+#include "server/commands/tcp/scoreboard.hpp"
 
 class CommandHandler {
     public:

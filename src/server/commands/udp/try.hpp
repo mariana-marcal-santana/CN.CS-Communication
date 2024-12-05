@@ -28,9 +28,11 @@ class TryCommand : public UDPCommand {
 
         bool check() override;
         std::string exec() override;
-        std::string formatData() override;
-        std::string evalTry(std::string solution);
+        std::string evalTry(std::string solution, std::string time);
+        std::string calcScore(int tries, int seconds);
         std::vector<std::string> getPlayerTries(std::string plid);
+        void logGame(std::string code, std::time_t time);
+        void logGame(std::string code, std::string colors, std::string mode, int tries, std::time_t time);
 };
 
 #endif

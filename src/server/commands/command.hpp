@@ -37,7 +37,6 @@ class Command
         virtual std::string execute() = 0;
         virtual bool check() = 0;
         virtual std::string exec() = 0;
-        virtual std::string formatData() = 0;
         std::string findPlayerInfo(std::string plid);
         int getPlayerTries(std::string plid);
 };
@@ -51,7 +50,6 @@ class UDPCommand : public Command
     std::string execute() override;
     virtual bool check() = 0;
     virtual std::string exec() = 0; 
-    virtual std::string formatData() = 0;
 };
 
 class TCPCommand : public Command
@@ -63,7 +61,6 @@ class TCPCommand : public Command
     std::string execute() override;
     virtual bool check() = 0;
     virtual std::string exec() = 0;
-    virtual std::string formatData() = 0;
 };
 
 
