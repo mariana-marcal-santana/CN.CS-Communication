@@ -24,7 +24,6 @@ class DebugCommand : public UDPCommand {
 
         bool check() override;
         std::string exec() override;
-        std::string formatData() override;
 };
 
 #endif

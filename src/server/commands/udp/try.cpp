@@ -157,7 +157,7 @@ std::string TryCommand::exec() {
     }
 
     // invalid try number
-    if (std::stoi(this->nT) != tries.size() + 1)
+    if (std::stoi(this->nT) != static_cast<int>(tries.size() + 1))
         return "RTR INV\n";
 
     // valid try

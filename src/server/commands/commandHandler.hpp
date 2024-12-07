@@ -7,12 +7,12 @@
 #include <algorithm>
 #include <sstream>
 #include "command.hpp"
-//#include "server/commands/udp/start.hpp"
-#include "server/commands/udp/try.hpp"
-// #include "server/commands/udp/quit_exit.hpp"
-#include "server/commands/udp/debug.hpp"
-#include "server/commands/tcp/showtrials.hpp"
-#include "server/commands/tcp/scoreboard.hpp"
+#include "udp/start.hpp"
+#include "udp/try.hpp"
+#include "udp/quit_exit.hpp"
+#include "udp/debug.hpp"
+#include "tcp/showtrials.hpp"
+#include "tcp/scoreboard.hpp"
 
 class CommandHandler {
     public:

@@ -10,12 +10,12 @@ bool ShowTrialsCommand::check() {
 std::string ShowTrialsCommand::exec() {
     std::string fileName = "GAME_" + this->plid + ".txt";
     std::ifstream file(fileName);
-    if (file.is_open() == ERROR) {
+    if (!file.is_open()) {
         perror("Unable to open file");
         exit(1);
     }
 
-    
+
     std::string line;
     std::getline(file, line);
     file.close();

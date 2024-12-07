@@ -120,7 +120,7 @@ int main (int argc, char *argv[]) {
                     else if (pid == 0) {
                         
                         while (n != 0) {
-                            if (n = read(newfd, buffer, BUFFER_SIZE) == ERROR) {
+                            if ((n = read(newfd, buffer, BUFFER_SIZE)) == ERROR) {
                                 perror("Read error");
                                 exit(1);
                             } 
