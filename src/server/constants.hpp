@@ -3,8 +3,8 @@
 
 #define PORT_FLAG "-p"
 
-#define DB_GAMES_PATH "../../../db/GAMES"
-#define DB_SCORES_PATH "../../../db/SCORES"
+#define DB_GAMES_PATH "db/GAMES"
+#define DB_SCORES_PATH "db/SCORES"
 
 #define ERROR -1
 #define INVALID_COMMAND_MSG "Invalid command"

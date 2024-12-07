@@ -56,9 +56,11 @@ void TryCommand::logGame(std::string code, std::time_t now) {
     std::ostringstream timestamp;
     timestamp << std::put_time(std::localtime(&now), "%Y%m%d_%H%M%S_");
 
-    std::string srcFileName = (std::string)DB_GAMES_PATH + "GAME_" + this->plid + ".txt";
+    std::string srcFileName = (std::string)DB_GAMES_PATH + "/GAME_" + this->plid + ".txt";
     std::ifstream src(srcFileName);
-    std::ofstream dst((std::string)DB_GAMES_PATH + "/" + this->plid + timestamp.str() + code + ".txt");
+
+    std::filesystem::create_directories((std::string)DB_GAMES_PATH + "/" + this->plid);
+    std::ofstream dst((std::string)DB_GAMES_PATH + "/" + this->plid + "/" + timestamp.str() + code + ".txt");
 
     if (!src.is_open() || !dst.is_open()) {
         std::perror("Error opening files");
@@ -116,13 +118,15 @@ bool TryCommand::check() {
 }
 
 std::string TryCommand::exec() {
-
+    printf("execTry");
     // playerInfo: plid mode colors time date hour timestamp
     std::string playerInfo = this->findPlayerInfo(this->plid);
     
     // no active game
-    if (playerInfo == "")
+    if (playerInfo == "") {
+        printf("no active game");
         return "RTR NOK\n";
+    }
 
     std::istringstream iss(playerInfo);
     std::string arg;
@@ -135,14 +139,19 @@ std::string TryCommand::exec() {
 
     // game timeout
     if (now - std::stoi(args[6]) > std::stoi(args[3])) {
-        this->logGame("T", now - std::stoi(args[6]));
-        return "RTR ETM\n";
+        printf("timeout");
+        this->logGame("T", now);
+        std::string result = "RTR ETM";
+        for (size_t i = 0; i < args[2].length(); i++)
+            result = result + " " + args[i];
+        return result + "\n";
     }
 
     std::vector<std::string> tries = this->getPlayerTries(this->plid);
 
     // too many tries
     if (tries.size() > MAX_TRIES) {
+        printf("too many tries");
         this->logGame("F", now - std::stoi(args[6]));
         std::string result = "RTR ENT";
         for (size_t i = 0; i < args[2].length(); i++)
@@ -152,18 +161,24 @@ std::string TryCommand::exec() {
 
     // duplicate try
     for (std::string t : tries) {
+        printf("duplicate try");
         if (t == this->C1 + this->C2 + this->C3 + this->C4)
             return "RTR DUP\n";
     }
 
     // invalid try number
-    if (std::stoi(this->nT) != static_cast<int>(tries.size() + 1))
+    if (std::stoi(this->nT) != static_cast<int>(tries.size() + 1)) {
+        printf("invalid try number");
         return "RTR INV\n";
+    }
+        
 
     // valid try
     std::string evalTry = this->evalTry(args[2], std::to_string(now - std::stoi(args[6])));
-    if (evalTry == "4 0")
+    if (evalTry == "4 0") {
+        printf("win");
         this->logGame("W", args[2], args[1], tries.size() + 1, now - std::stoi(args[6]));
+    }
     
     return "RTR OK " + std::to_string(tries.size() + 1) + evalTry + "\n";
 }

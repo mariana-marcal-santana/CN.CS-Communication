@@ -36,7 +36,7 @@ int main (int argc, char *argv[]) {
         exit(1);
     }
 
-    if (res != NULL) freeaddrinfo(res);
+    
 
     // TCP socket
     int tcp = socket(AF_INET, SOCK_STREAM, 0);
@@ -61,13 +61,17 @@ int main (int argc, char *argv[]) {
     FD_SET(udp, &inputs);
     FD_SET(tcp, &inputs);
     
-    timeout.tv_sec = 1000;
-
     printf("Server is running\n");
     
     while (1) {
         testfds = inputs;
-        out_fds = select(FD_SETSIZE, &testfds, (fd_set *) NULL, (fd_set *) NULL, (struct timeval *) &timeout);
+        printf("testfds byte: %d\n",((char *)&testfds)[0]);
+        memset((void *)&timeout,0,sizeof(timeout));
+        timeout.tv_sec = 1000;
+        out_fds = select(FD_SETSIZE, &testfds, (fd_set *)NULL, (fd_set *)NULL, (struct timeval *)&timeout);
+
+        printf("testfds byte: %d\n",((char *)&testfds)[0]);
+        printf("out_fds: %d\n", out_fds);
 
         switch (out_fds) {
             case 0:
@@ -84,6 +88,8 @@ int main (int argc, char *argv[]) {
                 }
                 if (FD_ISSET(udp, &testfds)) {
 
+                    printf("UDPCommand received\n");
+
                     addrlen = sizeof(udp_useraddr);
                     ret = recvfrom(udp, prt_str, 80, 0, (struct sockaddr *) &udp_useraddr, &addrlen);
 
@@ -92,15 +98,18 @@ int main (int argc, char *argv[]) {
                             prt_str[ret - 1] = 0; // \0 ?? verificar
 
                         errcode = getnameinfo((struct sockaddr *) &udp_useraddr, addrlen, host, sizeof host, service, sizeof service, 0);
-
-                        Command* command = CommandHandler::createCommand(prt_str);
-                        command->execute();
-                        //command->send();
-                        /*printf("UDP socket: %s\n", command->formatData());*/
-
                         if (errcode == 0)
                             printf("Sent by [%s:%s]\n",host,service);
 
+                        printf("Received: %s", prt_str);
+
+                        Command* command = CommandHandler::createCommand(prt_str);
+                        std::string response = command != nullptr ? command->execute() : INVALID_COMMAND_MSG;
+                        
+                        if (sendto(udp, response.c_str(), response.size(), 0, (struct sockaddr*)&udp_useraddr, addrlen) == ERROR) {
+                            perror("Sendto error");
+                            exit(1);
+                        }
                     }
                 }
                 if (FD_ISSET(tcp, &testfds)) {
