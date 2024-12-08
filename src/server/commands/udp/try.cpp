@@ -4,12 +4,18 @@ std::string TryCommand::calcScore(int tries, int seconds) {
 
     double triesFactor = std::min(1.0, static_cast<double>(MAX_TRIES - tries) / MAX_TRIES);
     double timeFactor = std::min(1.0, static_cast<double>(GAME_TIMEOUT - seconds) / GAME_TIMEOUT);
-    double score = (triesFactor * 0.5 + timeFactor * 0.5) * 100;
+    int score = static_cast<int>(std::round((triesFactor * 0.5 + timeFactor * 0.5) * 100));
 
-    return std::to_string(score);
+    std::ostringstream oss;
+    oss.width(3);
+    oss.fill('0');
+    oss << score;    
+
+    return oss.str();
 }
 
-std::string TryCommand::evalTry(std::string solution, std::string time) {
+std::string TryCommand::evalLogTry(std::string solution, std::string time) {
+    printf("evalLogTry");
     std::string guess = this->C1 + this->C2 + this->C3 + this->C4;
     for (size_t i = 0; i < solution.length(); i++) {
         if (solution[i] == guess[i]) 
@@ -17,22 +23,23 @@ std::string TryCommand::evalTry(std::string solution, std::string time) {
         else if (solution.find(guess[i]) != std::string::npos)
             this->nW ++;
     }
-    std::string result = std::to_string(this->nB) + std::to_string(this->nW);
+    std::string result = std::to_string(this->nB) + " " + std::to_string(this->nW);
 
     // log try
-    std::ofstream file((std::string)DB_GAMES_PATH + "GAME_" + this->plid + ".txt");
+    std::ofstream file((std::string)DB_GAMES_PATH + "/GAME_" + this->plid + ".txt", std::ofstream::app);
     if (!file) {
         std::cerr << "Unable to open file." << std::endl;
         exit(1);
     }
-    file << "T: " + this->C1 + " " + this->C2 + " " + this->C3 + " " + this->C4 + " " + result + " " + time << std::endl;
+    file << "T: " + this->C1 + this->C2  + this->C3 + this->C4 + " " + result + " " + time << std::endl;
     file.close();
 
     return result;
 }
 
 std::vector<std::string> TryCommand::getPlayerTries(std::string plid) {
-    std::ifstream file("GAME_" + plid + ".txt");
+    printf("getPlayerTries");
+    std::ifstream file((std::string)DB_GAMES_PATH + "/GAME_" + plid + ".txt");
     if (!file) {
         std::cerr << "Unable to open file." << std::endl;
         exit(1);
@@ -42,16 +49,19 @@ std::vector<std::string> TryCommand::getPlayerTries(std::string plid) {
     while (std::getline(file, line)) {
         if (line[0] == 'T') {
             std::istringstream iss(line);
+            std::vector<std::string> args;
             std::string arg;
-            iss >> arg;
-            tries.push_back(arg);
+            while (iss >> arg) {
+                args.push_back(arg);
+            }
+            tries.push_back(args[1]);
         }
     }
     file.close();
     return tries;
 }
 
-void TryCommand::logGame(std::string code, std::time_t now) {
+void TryCommand::logGame(std::string code, std::time_t now, std::time_t init) {
 
     std::ostringstream timestamp;
     timestamp << std::put_time(std::localtime(&now), "%Y%m%d_%H%M%S_");
@@ -72,6 +82,11 @@ void TryCommand::logGame(std::string code, std::time_t now) {
         dst << line << std::endl;
     }
 
+    timestamp.str("");
+    timestamp.clear(); 
+    timestamp << std::put_time(std::localtime(&now), "%d-%m-%Y %H:%M:%S");
+    dst << timestamp.str() + " " + std::to_string(now - init) << std::endl;
+
     src.close();
     dst.close();
 
@@ -80,17 +95,18 @@ void TryCommand::logGame(std::string code, std::time_t now) {
     }
 }
 
-void TryCommand::logGame(std::string code, std::string colors, std::string mode, int tries, std::time_t time) {
+void TryCommand::logGame(std::string code, std::string colors, std::string mode, int tries, std::time_t now, std::time_t init) {
 
-    this->logGame(code, time);
+    this->logGame(code, now, init);
 
     std::ostringstream timestamp;
-    timestamp << std::put_time(std::localtime(&time), "_%d%m%Y_%H%M%S_");
+    timestamp << std::put_time(std::localtime(&now), "_%d%m%Y_%H%M%S_");
 
-    std::string score = calcScore(this->getPlayerTries(this->plid).size(), time);
+    std::string score = calcScore(tries, now - init);
 
-    std::ofstream file((std::string)DB_SCORES_PATH + score + "_" + this->plid + timestamp.str() + ".txt");
+    std::ofstream file((std::string)DB_SCORES_PATH + "/" + score + "_" + this->plid + timestamp.str() + ".txt");
     if (!file.is_open()) {
+        printf("file score");
         std::perror("Unable to open file");
         exit(1);
     }
@@ -140,7 +156,7 @@ std::string TryCommand::exec() {
     // game timeout
     if (now - std::stoi(args[6]) > std::stoi(args[3])) {
         printf("timeout");
-        this->logGame("T", now);
+        this->logGame("T", now, std::stoi(args[6]));
         std::string result = "RTR ETM";
         for (size_t i = 0; i < args[2].length(); i++)
             result = result + " " + args[i];
@@ -150,9 +166,9 @@ std::string TryCommand::exec() {
     std::vector<std::string> tries = this->getPlayerTries(this->plid);
 
     // too many tries
-    if (tries.size() > MAX_TRIES) {
+    if (std::atoi(this->nT.c_str()) > MAX_TRIES) {
         printf("too many tries");
-        this->logGame("F", now - std::stoi(args[6]));
+        this->logGame("F", now, std::stoi(args[6]));
         std::string result = "RTR ENT";
         for (size_t i = 0; i < args[2].length(); i++)
             result = result + " " + args[i];
@@ -161,9 +177,9 @@ std::string TryCommand::exec() {
 
     // duplicate try
     for (std::string t : tries) {
-        printf("duplicate try");
-        if (t == this->C1 + this->C2 + this->C3 + this->C4)
+        if (t == this->C1 + this->C2 + this->C3 + this->C4) {
             return "RTR DUP\n";
+        }
     }
 
     // invalid try number
@@ -171,14 +187,12 @@ std::string TryCommand::exec() {
         printf("invalid try number");
         return "RTR INV\n";
     }
-        
 
     // valid try
-    std::string evalTry = this->evalTry(args[2], std::to_string(now - std::stoi(args[6])));
-    if (evalTry == "4 0") {
-        printf("win");
-        this->logGame("W", args[2], args[1], tries.size() + 1, now - std::stoi(args[6]));
+    std::string evalLogTry = this->evalLogTry(args[2], std::to_string(now - std::stoi(args[6])));
+    if (evalLogTry == "4 0") {
+        this->logGame("W", args[2], args[1], tries.size() + 1, now, std::stoi(args[6]));
     }
     
-    return "RTR OK " + std::to_string(tries.size() + 1) + evalTry + "\n";
+    return "RTR OK " + std::to_string(tries.size() + 1) + " " + evalLogTry + "\n";
 }

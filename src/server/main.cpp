@@ -20,7 +20,7 @@ int main (int argc, char *argv[]) {
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_PASSIVE|AI_NUMERICSERV;
 
-    if ((getaddrinfo(NULL, SERVER_PORT, &hints, &res)) != 0)
+    if ((getaddrinfo(NULL, serverPort.c_str(), &hints, &res)) != 0)
         exit(1);
 
     // UDP socket
@@ -35,8 +35,6 @@ int main (int argc, char *argv[]) {
         write(1, prt_str, strlen(prt_str)); // ???
         exit(1);
     }
-
-    
 
     // TCP socket
     int tcp = socket(AF_INET, SOCK_STREAM, 0);
@@ -65,12 +63,12 @@ int main (int argc, char *argv[]) {
     
     while (1) {
         testfds = inputs;
-        printf("testfds byte: %d\n",((char *)&testfds)[0]);
+        //printf("testfds byte: %d\n",((char *)&testfds)[0]);
         memset((void *)&timeout,0,sizeof(timeout));
         timeout.tv_sec = 1000;
         out_fds = select(FD_SETSIZE, &testfds, (fd_set *)NULL, (fd_set *)NULL, (struct timeval *)&timeout);
 
-        printf("testfds byte: %d\n",((char *)&testfds)[0]);
+        //printf("testfds byte: %d\n",((char *)&testfds)[0]);
         printf("out_fds: %d\n", out_fds);
 
         switch (out_fds) {

@@ -21,7 +21,7 @@ int Client::setupConnection() {
     udp_hints.ai_family = AF_INET;
     udp_hints.ai_socktype = SOCK_DGRAM;
 
-    if (getaddrinfo(serverIP.c_str(), serverPort.c_str(), &this->udp_hints, &this->udp_res) != 0) {
+    if (getaddrinfo(serverIP.c_str(), serverPort.c_str(), &this->udp_hints, &this->udp_res) == ERROR) {
         perror("Error getting address info");
         exit(1);
     }

@@ -3,7 +3,7 @@
 
 #define IP_FLAG "-n"
 #define PORT_FLAG "-p"
-#define SERVER_IP "?"
+#define SERVER_IP "localhost"
 #define SERVER_PORT "58052"
 #define CONNECTION_TIMEOUT 600
 #define MAX_FILE_SIZE 1024
