@@ -87,20 +87,12 @@ int main (int argc, char *argv[]) {
                     addrlen = sizeof(udp_useraddr);
                     ret = recvfrom(udp, prt_str, 80, 0, (struct sockaddr *) &udp_useraddr, &addrlen);
 
-                    if (ret >= 0) {
-                        if (strlen(prt_str) > 0) //ver se isto n e redundante
-                            prt_str[ret - 1] = 0; // \0 ?? verificar
-
-                        errcode = getnameinfo((struct sockaddr *) &udp_useraddr, addrlen, host, sizeof host, service, sizeof service, 0);
+                    if (ret > 0) {
+                        prt_str[ret] = 0; // \0 ??
 
                         Command* command = CommandHandler::createCommand(prt_str);
-                        command->execute();
-                        //command->send();
-                        /*printf("UDP socket: %s\n", command->formatData());*/
-
-                        if (errcode == 0)
-                            printf("Sent by [%s:%s]\n",host,service);
-
+                        std::string response = command->execute();
+                        /*enviar comando*/
                     }
                 }
                 if (FD_ISSET(tcp, &testfds)) {

@@ -10,6 +10,6 @@
 
 #include "constants.hpp"
 
-bool checkPlayer(std::string plid);
+bool findPlayer(std::string plid);
 
 #endif
