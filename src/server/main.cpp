@@ -10,17 +10,25 @@ int main (int argc, char *argv[]) {
     socklen_t addrlen;
     fd_set inputs, testfds;
     struct timeval timeout;
-    struct addrinfo hints, *res;
+    struct addrinfo udp_hints, tcp_hints, *udp_res, *tcp_res;
     struct sockaddr_in udp_useraddr, tcp_useraddr;
     pid_t pid;
     ssize_t n, nw;
 
-    memset(&hints, 0, sizeof hints);
-    hints.ai_family = AF_INET;
-    hints.ai_socktype = SOCK_STREAM;
-    hints.ai_flags = AI_PASSIVE|AI_NUMERICSERV;
+    memset(&udp_hints, 0, sizeof udp_hints);
+    udp_hints.ai_family = AF_INET;
+    udp_hints.ai_socktype = SOCK_DGRAM;
+    udp_hints.ai_flags = AI_PASSIVE;
 
-    if ((getaddrinfo(NULL, serverPort.c_str(), &hints, &res)) != 0)
+    if ((getaddrinfo(NULL, serverPort.c_str(), &udp_hints, &udp_res)) != 0)
+        exit(1);
+
+    memset(&tcp_hints, 0, sizeof tcp_hints);
+    tcp_hints.ai_family = AF_INET;
+    tcp_hints.ai_socktype = SOCK_STREAM;
+    tcp_hints.ai_flags = AI_PASSIVE;
+
+    if ((getaddrinfo(NULL, serverPort.c_str(), &tcp_hints, &tcp_res)) != 0)
         exit(1);
 
     // UDP socket
@@ -30,9 +38,8 @@ int main (int argc, char *argv[]) {
         exit(1);
     }
 
-    if (bind(udp, res->ai_addr, res->ai_addrlen) == ERROR) {
-        sprintf(prt_str, "Bind error UDP server\n");
-        write(1, prt_str, strlen(prt_str)); // ???
+    if (bind(udp, udp_res->ai_addr, udp_res->ai_addrlen) == ERROR) {
+        perror("Bind error UDP server");
         exit(1);
     }
 
@@ -43,9 +50,8 @@ int main (int argc, char *argv[]) {
         exit(1);
     }
     
-    if (bind(tcp, res->ai_addr, res->ai_addrlen) == ERROR) {
-        sprintf(prt_str, "Bind error TCP server\n");
-        write(1, prt_str, strlen(prt_str)); // ???
+    if (bind(tcp, tcp_res->ai_addr, tcp_res->ai_addrlen) == ERROR) {
+        perror("Bind error TCP server");
         exit(1);
     }
 
@@ -102,7 +108,7 @@ int main (int argc, char *argv[]) {
                         printf("Received: %s", prt_str);
 
                         Command* command = CommandHandler::createCommand(prt_str);
-                        std::string response = command != nullptr ? command->execute() : INVALID_COMMAND_MSG;
+                        std::string response = command != nullptr ? command->execute() : ERR;
                         
                         if (sendto(udp, response.c_str(), response.size(), 0, (struct sockaddr*)&udp_useraddr, addrlen) == ERROR) {
                             perror("Sendto error");
@@ -111,13 +117,23 @@ int main (int argc, char *argv[]) {
                     }
                 }
                 if (FD_ISSET(tcp, &testfds)) {
+
+                    printf("TCPCommand received\n");
                     
                     addrlen = sizeof(tcp_useraddr);
+                    do newfd = accept(tcp, (struct sockaddr *) &tcp_useraddr, &addrlen);
+                    while (newfd == -1 && errno == EINTR);
 
-                    if ((newfd = accept(tcp, (struct sockaddr *) &tcp_useraddr, &addrlen)) == ERROR) {
+                    if(newfd == -1) {
                         perror("Accept error");
                         exit(1);
                     }
+
+                    //     exit(1);
+                    // while ((newfd = accept(tcp, (struct sockaddr *) &tcp_useraddr, &addrlen)) == ERROR && errno != EINTR) {
+                    //     perror("Accept error");
+                    //     exit(1);
+                    // }
 
                     // fork
                     if ((pid = fork()) == ERROR) {
@@ -125,53 +141,57 @@ int main (int argc, char *argv[]) {
                         exit(1);
                     }
                     else if (pid == 0) {
+
+                        std::string received_data;
                         
-                        while (n != 0) {
-                            if ((n = read(newfd, buffer, BUFFER_SIZE)) == ERROR) {
+                        while ((n = read(newfd, buffer, BUFFER_SIZE)) != 0) {
+                            if (n == ERROR) {
                                 perror("Read error");
                                 exit(1);
                             } 
+                            received_data.append(buffer, n);
                         }
 
-                        std::string str(buffer);
-                        Command* command = CommandHandler::createCommand(str);
+                        Command* command = CommandHandler::createCommand(received_data);
+                        printf("ok");
 
+                        std::string response;
                         if (command == nullptr) {
-                            str = "ERR\n";
+                            response = "ERR\n";
                         }
                         else {
-                            str = command->execute();
+                            response = command->execute();
                             delete command;
                         }
 
-                        ptr=&buffer[0];
+                        //ptr=&buffer[0];
+                        int size = response.size();
+                        ptr = (char *)response.c_str();
 
-                        while (n > 0) {
-                            if ((nw = write(newfd, ptr, n)) <= 0) exit(1);
-                            n-=nw; 
+                        printf("ok2");
+
+                        while (size > 0) {
+                            if ((nw = write(newfd, ptr, BUFFER_SIZE)) == ERROR) {
+                                perror("Error writing to client");
+                                exit(1);
+                            }
+                            size-=nw; 
                             ptr+=nw;
-
-                        close(newfd); //???????
                         }
+                        close(newfd);
+                        exit(0);
                     }
-                    // read e write são com o newfd
+                    do ret = close(newfd);
+                    while (ret == ERROR && errno == EINTR);
+                    if (ret == ERROR)
+                        exit(1);
 
-                    // if ((ret = read(newfd, buffer, BUFFER_SIZE)) == ERROR) {
-                    //     perror("Read error");
-                    //     exit(1);
-                    // }
-
-                    // if (write(1, buffer, ret) == ERROR) {
-                    //     perror("Write error");
-                    //     exit(1);
-                    // }
-
-                    // close(newfd);
                 }
         }
     }
 
-    if (res != NULL) freeaddrinfo(res);
+    freeaddrinfo(udp_res);
+    freeaddrinfo(tcp_res);
     close(udp);
     close(tcp);
 

@@ -10,7 +10,7 @@
 #define INVALID_COMMAND_MSG "Invalid command"
 #define HAS_STARTED_GAME "You have already started a game"
 #define BUFFER_SIZE 128
-#define BACKLOG 10
+#define BACKLOG 5
 
 #define UDP 1
 #define TCP 2
@@ -30,7 +30,7 @@
 
 #define OK "OK"
 #define NOK "NOK"
-#define ERR "ERR"
+#define ERR "ERR\n"
 #define DUP "DUP"
 #define INV "INV"
 #define ENT "ENT"

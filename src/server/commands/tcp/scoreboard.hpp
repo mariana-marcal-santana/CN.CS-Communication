@@ -14,6 +14,7 @@ class ScoreboardCommand : public TCPCommand {
 
         bool check() override;
         std::string exec() override;
+        std::string formatScoreboardLine(int i, std::filesystem::path path);
 };
 
 #endif

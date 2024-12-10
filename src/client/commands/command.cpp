@@ -60,7 +60,7 @@ void TCPCommand::send() {
 int TCPCommand::execute() {
 
     this->client->tcp_sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (this->client->udp_sockfd == ERROR) {
+    if (this->client->tcp_sockfd == ERROR) {
         perror("Error creating socket");
         exit(1);
     }
