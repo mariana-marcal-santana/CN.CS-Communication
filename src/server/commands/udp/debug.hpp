@@ -4,6 +4,9 @@
 #include "../command.hpp"
 #include <sstream>
 #include <vector>
+#include <iostream>
+#include <chrono>
+#include <iomanip>
 
 class DebugCommand : public UDPCommand {
 
@@ -21,7 +24,6 @@ class DebugCommand : public UDPCommand {
 
         bool check() override;
         std::string exec() override;
-        std::string formatData() override;
 };
 
 #endif

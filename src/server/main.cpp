@@ -20,7 +20,7 @@ int main (int argc, char *argv[]) {
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_PASSIVE|AI_NUMERICSERV;
 
-    if ((getaddrinfo(NULL, SERVER_PORT, &hints, &res)) != 0)
+    if ((getaddrinfo(NULL, serverPort.c_str(), &hints, &res)) != 0)
         exit(1);
 
     // UDP socket
@@ -35,8 +35,6 @@ int main (int argc, char *argv[]) {
         write(1, prt_str, strlen(prt_str)); // ???
         exit(1);
     }
-
-    if (res != NULL) freeaddrinfo(res);
 
     // TCP socket
     int tcp = socket(AF_INET, SOCK_STREAM, 0);
@@ -61,13 +59,17 @@ int main (int argc, char *argv[]) {
     FD_SET(udp, &inputs);
     FD_SET(tcp, &inputs);
     
-    timeout.tv_sec = 1000;
-
     printf("Server is running\n");
     
     while (1) {
         testfds = inputs;
-        out_fds = select(FD_SETSIZE, &testfds, (fd_set *) NULL, (fd_set *) NULL, (struct timeval *) &timeout);
+        //printf("testfds byte: %d\n",((char *)&testfds)[0]);
+        memset((void *)&timeout,0,sizeof(timeout));
+        timeout.tv_sec = 1000;
+        out_fds = select(FD_SETSIZE, &testfds, (fd_set *)NULL, (fd_set *)NULL, (struct timeval *)&timeout);
+
+        //printf("testfds byte: %d\n",((char *)&testfds)[0]);
+        printf("out_fds: %d\n", out_fds);
 
         switch (out_fds) {
             case 0:
@@ -84,15 +86,28 @@ int main (int argc, char *argv[]) {
                 }
                 if (FD_ISSET(udp, &testfds)) {
 
+                    printf("UDPCommand received\n");
+
                     addrlen = sizeof(udp_useraddr);
                     ret = recvfrom(udp, prt_str, 80, 0, (struct sockaddr *) &udp_useraddr, &addrlen);
 
-                    if (ret > 0) {
-                        prt_str[ret] = 0; // \0 ??
+                    if (ret >= 0) {
+                        if (strlen(prt_str) > 0) //ver se isto n e redundante
+                            prt_str[ret - 1] = 0; // \0 ?? verificar
+
+                        errcode = getnameinfo((struct sockaddr *) &udp_useraddr, addrlen, host, sizeof host, service, sizeof service, 0);
+                        if (errcode == 0)
+                            printf("Sent by [%s:%s]\n",host,service);
+
+                        printf("Received: %s", prt_str);
 
                         Command* command = CommandHandler::createCommand(prt_str);
-                        std::string response = command->execute();
-                        /*enviar comando*/
+                        std::string response = command != nullptr ? command->execute() : INVALID_COMMAND_MSG;
+                        
+                        if (sendto(udp, response.c_str(), response.size(), 0, (struct sockaddr*)&udp_useraddr, addrlen) == ERROR) {
+                            perror("Sendto error");
+                            exit(1);
+                        }
                     }
                 }
                 if (FD_ISSET(tcp, &testfds)) {
@@ -112,7 +127,7 @@ int main (int argc, char *argv[]) {
                     else if (pid == 0) {
                         
                         while (n != 0) {
-                            if (n = read(newfd, buffer, BUFFER_SIZE) == ERROR) {
+                            if ((n = read(newfd, buffer, BUFFER_SIZE)) == ERROR) {
                                 perror("Read error");
                                 exit(1);
                             } 

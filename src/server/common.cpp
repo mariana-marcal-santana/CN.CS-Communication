@@ -2,7 +2,7 @@
 
 bool findPlayer(std::string plid) {
     std::ifstream file("players.txt");
-    if (file.is_open() == ERROR) {
+    if (!file.is_open()) {
         std::cerr << "Unable to open file." << std::endl;
         exit(1);
     }

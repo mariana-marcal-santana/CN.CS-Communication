@@ -20,11 +20,10 @@ std::string Command::findPlayerInfo(std::string plid) {
     try {
         for (const auto &entry : std::filesystem::directory_iterator(DB_GAMES_PATH)) {
             if (entry.path().filename().string() == fileName) {
-                // printf("found");
-                // printf("filename: %s", ((std::string)DB_GAMES_PATH + "/" + fileName).c_str());
+
                 std::ifstream file((std::string)DB_GAMES_PATH + "/" + fileName);
                 if (!file.is_open()) {
-                    std::cerr << "Unable to open file." << std::endl;
+                    perror("Unable to open file.");
                     exit(1);
                 }
                 std::string line;
@@ -38,26 +37,6 @@ std::string Command::findPlayerInfo(std::string plid) {
     }
     return "";
 }
-
-int Command::getPlayerTries(std::string plid) {
-    std::ifstream file("players.txt");
-    if (!file.is_open()) {
-        std::cerr << "Unable to open file." << std::endl;
-        exit(1);
-    }
-    std::string line;
-    while (std::getline(file, line)) {
-        std::istringstream iss(line);
-        std::string arg;
-        if (arg == plid) {
-            iss >> arg;
-            return std::stoi(arg);
-        }
-    }
-    file.close();
-    return 0;
-}
-
 
 int Command::createPlayerFile(std::string plid, char mode, std::string key, int time){
     std::string playerInfo;
