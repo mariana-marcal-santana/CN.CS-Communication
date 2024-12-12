@@ -4,6 +4,7 @@
 #include <string>
 #include <memory>
 #include "../protocol/protocol.hpp"
+#include "../constants.hpp"
 
 class Command
 {

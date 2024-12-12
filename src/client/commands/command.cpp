@@ -48,13 +48,27 @@ void UDPCommand::receive() {
 
 void TCPCommand::send() {
 
+    // ssize_t nleft, nwritten;
+    // char *ptr;
+
     std::string dataToSend = this->formatData();
     printf("Sending data: %s", dataToSend.c_str());
+
+    // ptr = (char *)dataToSend.c_str();
+    // nleft = dataToSend.length();
+    // while (nleft > 0) {
+    //     nwritten = write(this->client->tcp_sockfd, ptr, nleft);
+    //     if(nwritten<=0)/*error*/exit(1);
+    //     nleft-=nwritten;
+    //     ptr+=nwritten;
+    // }
 
     if (write(this->client->tcp_sockfd, dataToSend.c_str(), dataToSend.length()) == ERROR) {
         perror("Error sending data");
         exit(1);
     }
+
+    write(this->client->tcp_sockfd, "", 0);
 }
 
 int TCPCommand::execute() {

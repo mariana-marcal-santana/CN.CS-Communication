@@ -2,6 +2,7 @@
 #define CONSTANTS_HPP
 
 #define PORT_FLAG "-p"
+#define VERBOSE_FLAG "-v"
 
 #define DB_GAMES_PATH "db/GAMES"
 #define DB_SCORES_PATH "db/SCORES"

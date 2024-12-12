@@ -1,10 +1,13 @@
 #include "main.hpp"
 
 int main (int argc, char *argv[]) {
-    
-    std::string serverPort = (argc > 1 && std::string(argv[1]) == PORT_FLAG) ? argv[2] : SERVER_PORT;
 
-    int errcode, out_fds, ret, newfd;
+    std::string serverPort = (argc > 1 && std::string(argv[1]) == PORT_FLAG) ? argv[2] : SERVER_PORT;
+    bool verbose = (argc > 1 && (std::string(argv[1]) == VERBOSE_FLAG || std::string(argv[3]) == VERBOSE_FLAG));
+
+    printf("verbose: %d\n", verbose);
+
+    int out_fds, ret, newfd;
     char *ptr, buffer[BUFFER_SIZE], prt_str[90], 
         host[NI_MAXHOST], service[NI_MAXSERV];
     socklen_t addrlen;
@@ -13,7 +16,7 @@ int main (int argc, char *argv[]) {
     struct addrinfo udp_hints, tcp_hints, *udp_res, *tcp_res;
     struct sockaddr_in udp_useraddr, tcp_useraddr;
     pid_t pid;
-    ssize_t n, nw;
+    ssize_t nw;
 
     memset(&udp_hints, 0, sizeof udp_hints);
     udp_hints.ai_family = AF_INET;
@@ -72,7 +75,7 @@ int main (int argc, char *argv[]) {
         //printf("testfds byte: %d\n",((char *)&testfds)[0]);
         memset((void *)&timeout,0,sizeof(timeout));
         timeout.tv_sec = 1000;
-        out_fds = select(FD_SETSIZE, &testfds, (fd_set *)NULL, (fd_set *)NULL, (struct timeval *)&timeout);
+        out_fds = select(FD_SETSIZE, &testfds, (fd_set *)NULL, (fd_set *)NULL, (struct timeval *)NULL);
 
         //printf("testfds byte: %d\n",((char *)&testfds)[0]);
         printf("out_fds: %d\n", out_fds);
@@ -90,32 +93,33 @@ int main (int argc, char *argv[]) {
                     fgets(buffer, 50, stdin);
                     printf("Input at keyboard: %s\n", buffer);
                 }
+
                 if (FD_ISSET(udp, &testfds)) {
 
                     printf("UDPCommand received\n");
 
                     addrlen = sizeof(udp_useraddr);
-                    ret = recvfrom(udp, prt_str, 80, 0, (struct sockaddr *) &udp_useraddr, &addrlen);
+                    if (recvfrom(udp, prt_str, 80, 0, (struct sockaddr *) &udp_useraddr, &addrlen) == ERROR) {
+                        perror("Recvfrom error");
+                        exit(1);
+                    }
 
-                    if (ret >= 0) {
-                        if (strlen(prt_str) > 0) //ver se isto n e redundante
-                            prt_str[ret - 1] = 0; // \0 ?? verificar
-
-                        errcode = getnameinfo((struct sockaddr *) &udp_useraddr, addrlen, host, sizeof host, service, sizeof service, 0);
-                        if (errcode == 0)
-                            printf("Sent by [%s:%s]\n",host,service);
-
-                        printf("Received: %s", prt_str);
-
-                        Command* command = CommandHandler::createCommand(prt_str);
-                        std::string response = command != nullptr ? command->execute() : ERR;
-                        
-                        if (sendto(udp, response.c_str(), response.size(), 0, (struct sockaddr*)&udp_useraddr, addrlen) == ERROR) {
-                            perror("Sendto error");
-                            exit(1);
+                    if (verbose) {
+                        if (getnameinfo((struct sockaddr *) &udp_useraddr, addrlen, host, sizeof host, service, sizeof service, 0) == 0) {
+                            printf("Sent by [%s:%s]: %s", host, service, prt_str);
+                            fflush(stdout);
                         }
                     }
+                    
+                    Command* command = CommandHandler::createCommand(prt_str);
+                    std::string response = command != nullptr ? command->execute() : ERR;
+                    
+                    if (sendto(udp, response.c_str(), response.size(), 0, (struct sockaddr*)&udp_useraddr, addrlen) == ERROR) {
+                        perror("Sendto error");
+                        exit(1);
+                    }
                 }
+
                 if (FD_ISSET(tcp, &testfds)) {
 
                     printf("TCPCommand received\n");
@@ -129,27 +133,48 @@ int main (int argc, char *argv[]) {
                         exit(1);
                     }
 
-                    //     exit(1);
-                    // while ((newfd = accept(tcp, (struct sockaddr *) &tcp_useraddr, &addrlen)) == ERROR && errno != EINTR) {
-                    //     perror("Accept error");
-                    //     exit(1);
-                    // }
-
                     // fork
+                    printf("Forking\n");
                     if ((pid = fork()) == ERROR) {
                         perror("Fork error");
                         exit(1);
                     }
                     else if (pid == 0) {
 
+                        printf("Child process\n");
+
                         std::string received_data;
+
+                        while (true) {
+                            memset(buffer, 0, sizeof(buffer));
+                            int bytes_read = read(newfd, buffer, sizeof(buffer) - 1);
+                            if (bytes_read <= 0) {
+                                std::cout << "Client disconnected or error occurred." << std::endl;
+                                break;
+                            }
+                            received_data += buffer;
+                        }
                         
-                        while ((n = read(newfd, buffer, BUFFER_SIZE)) != 0) {
-                            if (n == ERROR) {
-                                perror("Read error");
-                                exit(1);
-                            } 
-                            received_data.append(buffer, n);
+                        // while ((n = read(newfd, buffer, BUFFER_SIZE)) != 0) {
+                        //     printf("%ld\n", n);
+                        //     fflush(stdout);
+                        //     if (n == ERROR) {
+                        //         perror("Read error");
+                        //         exit(1);
+                        //     }
+                        //     else if (n == 0) {
+                        //         break;
+                        //     }
+                        //     received_data.append(buffer, n);
+                        // }
+
+                        printf("finished reading\n");
+
+                        if (verbose) {
+                            if (getnameinfo((struct sockaddr *) &tcp_useraddr, addrlen, host, sizeof host, service, sizeof service, 0) == 0) {
+                                printf("Sent by [%s:%s]: %s", host, service, prt_str);
+                                fflush(stdout);
+                            }
                         }
 
                         Command* command = CommandHandler::createCommand(received_data);
