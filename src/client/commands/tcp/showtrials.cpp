@@ -1,5 +1,9 @@
 #include "showtrials.hpp"
 
+void ShowTrialsCommand::receive() {
+    return;
+}
+
 void ShowTrialsCommand::handleReceive() { // RST status [Fname Fsize Fdata]
 
     std::istringstream iss(this->data);

@@ -38,7 +38,6 @@ int main(int argc, char** argv) {
         }
         else {
             if (args[0] == START) { client->plid = args[1]; }
-            printf("plid: %s\n", client->plid.c_str());
 
             command->client = std::unique_ptr<Client>(client);
             exit = command->execute();

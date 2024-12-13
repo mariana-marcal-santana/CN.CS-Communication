@@ -41,27 +41,41 @@ std::string ScoreboardCommand::exec() {
         }
     }
     std::sort(files.begin(), files.end(), [](const std::filesystem::directory_entry& a, const std::filesystem::directory_entry& b) {
-        return a.path().filename() < b.path().filename();
+        return a.path().filename() > b.path().filename();
     });
 
-    std::ofstream scoreboard("scoreboard.txt");
-    if (!scoreboard.is_open()) {
-        perror("Unable to open file");
+    std::string scoreboardFileName = (std::string)DB_PATH + "scoreboard.txt";
+
+    std::ofstream w_scoreboard(scoreboardFileName.c_str());
+    if (!w_scoreboard.is_open()) {
+        perror("Unable to open file (write)");
         exit(1);
     }
 
-    scoreboard << "-------------------------------- TOP 10 SCORES --------------------------------\n\n";
-    scoreboard << "                 SCORE PLAYER     CODE    NO TRIALS   MODE\n\n";
+    w_scoreboard << "-------------------------------- TOP 10 SCORES --------------------------------\n\n";
+    w_scoreboard << "                 SCORE PLAYER     CODE    NO TRIALS   MODE\n\n";
 
     for (int i = 0; i < 10 && i < static_cast<int>(files.size()); i++)
-        scoreboard << this->formatScoreboardLine(i + 1, files[i].path()) << std::endl;
+        w_scoreboard << this->formatScoreboardLine(i + 1, files[i].path()) << std::endl;
 
-    std::ostringstream content;
-    content << scoreboard.rdbuf();
+    w_scoreboard.close();
 
-    scoreboard.close();
+    std::ifstream r_scoreboard(scoreboardFileName.c_str());
+    if (!r_scoreboard.is_open()) {
+        perror("Unable to open file (read)");
+        exit(1);
+    }
 
-    auto size = std::filesystem::file_size("scoreboard.txt");
+    std::stringstream content;
+    content << r_scoreboard.rdbuf();
+
+    r_scoreboard.close();
+
+    auto size = std::filesystem::file_size(scoreboardFileName);
+
+    if (std::remove(scoreboardFileName.c_str()) == ERROR) {
+        std::perror("Error deleting file");
+    }
 
     return "RSS OK scoreboard.txt " + std::to_string(size) + " " + content.str();
 }

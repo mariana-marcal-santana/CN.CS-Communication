@@ -16,6 +16,8 @@
 #include <signal.h>
 #include <string>
 #include <iostream>
+#include <cstring>
+
 
 #include "constants.hpp"
 #include "commands/command.hpp"

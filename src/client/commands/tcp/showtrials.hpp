@@ -10,6 +10,7 @@ class ShowTrialsCommand : public TCPCommand {
         ShowTrialsCommand() 
             : TCPCommand(SHOW_TRIALS) {};
 
+        void receive() override;
         void handleReceive() override;
         std::string formatData() override;
 };

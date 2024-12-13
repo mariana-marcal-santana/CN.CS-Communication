@@ -4,6 +4,7 @@
 #define PORT_FLAG "-p"
 #define VERBOSE_FLAG "-v"
 
+#define DB_PATH "db/"
 #define DB_GAMES_PATH "db/GAMES"
 #define DB_SCORES_PATH "db/SCORES"
 
@@ -25,7 +26,7 @@
 #define START "SNG"
 #define TRY "TRY"
 #define SHOW_TRIALS "show_trials"
-#define SCOREBOARD "scoreboard"
+#define SCOREBOARD "SSB"
 #define QUIT_EXIT "QUT"
 #define DEBUG "DBG"
 

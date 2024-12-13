@@ -4,11 +4,9 @@ int main (int argc, char *argv[]) {
 
     std::string serverPort = (argc > 1 && std::string(argv[1]) == PORT_FLAG) ? argv[2] : SERVER_PORT;
     bool verbose = (argc > 1 && (std::string(argv[1]) == VERBOSE_FLAG || std::string(argv[3]) == VERBOSE_FLAG));
-
-    printf("verbose: %d\n", verbose);
-
-    int out_fds, ret, newfd;
-    char *ptr, buffer[BUFFER_SIZE], prt_str[90], 
+    
+    int n, out_fds, newfd;
+    char buffer[BUFFER_SIZE], prt_str[90], 
         host[NI_MAXHOST], service[NI_MAXSERV];
     socklen_t addrlen;
     fd_set inputs, testfds;
@@ -52,6 +50,14 @@ int main (int argc, char *argv[]) {
         perror("TCP socket creation failed");
         exit(1);
     }
+
+    struct timeval tcp_timeout;
+    tcp_timeout.tv_sec = 0;
+    tcp_timeout.tv_usec = 500000;  // 0.5 seconds
+    if (setsockopt(tcp, SOL_SOCKET, SO_RCVTIMEO, (char *)&tcp_timeout, sizeof(tcp_timeout)) < 0) {
+        perror("Failed to set socket options");
+        exit(1);
+    }
     
     if (bind(tcp, tcp_res->ai_addr, tcp_res->ai_addrlen) == ERROR) {
         perror("Bind error TCP server");
@@ -72,13 +78,10 @@ int main (int argc, char *argv[]) {
     
     while (1) {
         testfds = inputs;
-        //printf("testfds byte: %d\n",((char *)&testfds)[0]);
+
         memset((void *)&timeout,0,sizeof(timeout));
         timeout.tv_sec = 1000;
         out_fds = select(FD_SETSIZE, &testfds, (fd_set *)NULL, (fd_set *)NULL, (struct timeval *)NULL);
-
-        //printf("testfds byte: %d\n",((char *)&testfds)[0]);
-        printf("out_fds: %d\n", out_fds);
 
         switch (out_fds) {
             case 0:
@@ -99,6 +102,7 @@ int main (int argc, char *argv[]) {
                     printf("UDPCommand received\n");
 
                     addrlen = sizeof(udp_useraddr);
+                    std::memset(prt_str, '\0', sizeof(prt_str   ));
                     if (recvfrom(udp, prt_str, 80, 0, (struct sockaddr *) &udp_useraddr, &addrlen) == ERROR) {
                         perror("Recvfrom error");
                         exit(1);
@@ -128,7 +132,7 @@ int main (int argc, char *argv[]) {
                     do newfd = accept(tcp, (struct sockaddr *) &tcp_useraddr, &addrlen);
                     while (newfd == -1 && errno == EINTR);
 
-                    if(newfd == -1) {
+                    if (newfd == -1) {
                         perror("Accept error");
                         exit(1);
                     }
@@ -146,71 +150,87 @@ int main (int argc, char *argv[]) {
                         std::string received_data;
 
                         while (true) {
-                            memset(buffer, 0, sizeof(buffer));
-                            int bytes_read = read(newfd, buffer, sizeof(buffer) - 1);
-                            if (bytes_read <= 0) {
-                                std::cout << "Client disconnected or error occurred." << std::endl;
+                            n = read(newfd, buffer, BUFFER_SIZE);
+                            printf("%d\n", n);
+                            if (n == ERROR) {
+                                if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                                    break;
+                                }
+                                else {
+                                    perror("Error reading from client");
+                                    exit(1);
+                                }
+                            }
+                            else if (n == 0) {
                                 break;
                             }
-                            received_data += buffer;
+                            received_data.append(buffer, n);
                         }
-                        
-                        // while ((n = read(newfd, buffer, BUFFER_SIZE)) != 0) {
-                        //     printf("%ld\n", n);
-                        //     fflush(stdout);
-                        //     if (n == ERROR) {
-                        //         perror("Read error");
-                        //         exit(1);
-                        //     }
-                        //     else if (n == 0) {
-                        //         break;
-                        //     }
-                        //     received_data.append(buffer, n);
-                        // }
-
-                        printf("finished reading\n");
 
                         if (verbose) {
                             if (getnameinfo((struct sockaddr *) &tcp_useraddr, addrlen, host, sizeof host, service, sizeof service, 0) == 0) {
-                                printf("Sent by [%s:%s]: %s", host, service, prt_str);
+                                printf("Sent by [%s:%s]: %s", host, service, received_data.c_str());
                                 fflush(stdout);
                             }
                         }
 
                         Command* command = CommandHandler::createCommand(received_data);
-                        printf("ok");
 
-                        std::string response;
+                        std::string resp;
+                        std::vector<std::string> response;
                         if (command == nullptr) {
-                            response = "ERR\n";
+                            resp = "ERR\n";
                         }
                         else {
-                            response = command->execute();
+                            resp = command->execute();
+                            TCPCommand* tcp_command = dynamic_cast<TCPCommand*>(command);
+                            response = tcp_command->parseToSend();
                             delete command;
                         }
 
-                        //ptr=&buffer[0];
-                        int size = response.size();
-                        ptr = (char *)response.c_str();
+                        printf("id_status: %s\n", response[0].c_str());
+                        if ((nw = write(newfd, response[0].c_str(), response[0].size())) == ERROR) {
+                            perror("Error writing to client (id and status)");
+                            exit(1);
+                        }
 
-                        printf("ok2");
-
-                        while (size > 0) {
-                            if ((nw = write(newfd, ptr, BUFFER_SIZE)) == ERROR) {
-                                perror("Error writing to client");
+                        if (response.size() > 1) {
+                            
+                            char fname[24];
+                            memset(fname, '\0', sizeof(fname));
+                            strcpy(fname, response[1].c_str());
+                            if ((nw = write(newfd, fname, 24)) == ERROR) {
+                                perror("Error writing to client (fname)");
                                 exit(1);
                             }
-                            size-=nw; 
-                            ptr+=nw;
+
+                            char fsize[4];
+                            memset(fsize, '\0', sizeof(fsize));
+                            strcpy(fsize, response[2].c_str());
+                            if ((nw = write(newfd, fsize, 4)) == ERROR) {
+                                perror("Error writing to client (fsize)");
+                                exit(1);
+                            }
+
+                            int size = std::stoi(response[2]);
+                            char *fdata_ptr = (char *)response[3].c_str();
+
+                            while (size > 0) {
+                                if ((nw = write(newfd, fdata_ptr, (size < BUFFER_SIZE) ? size : BUFFER_SIZE)) == ERROR) {
+                                    perror("Error writing to client (fdata)");
+                                    exit(1);
+                                }
+                                size -= nw; 
+                                fdata_ptr += nw;
+                            }
                         }
                         close(newfd);
-                        exit(0);
+                        exit(EXIT_SUCCESS);
                     }
-                    do ret = close(newfd);
-                    while (ret == ERROR && errno == EINTR);
-                    if (ret == ERROR)
-                        exit(1);
-
+                    //do ret = close(newfd);
+                    // while (ret == ERROR && errno == EINTR);
+                    // if (ret == ERROR)
+                    //     exit(1);
                 }
         }
     }

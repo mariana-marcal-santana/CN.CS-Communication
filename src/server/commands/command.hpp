@@ -65,6 +65,8 @@ class TCPCommand : public Command
     std::string execute() override;
     virtual bool check() = 0;
     virtual std::string exec() = 0;
+    std::vector<std::string> parseToSend();
+
 };
 
 

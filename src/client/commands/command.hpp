@@ -52,30 +52,9 @@ class TCPCommand : public Command
 
     void send() override;
     int execute() override;
-    void receive() override;
+    virtual void receive() = 0;
     virtual void handleReceive() = 0;
     virtual std::string formatData() = 0;
 };
-
-// {
-//     protected:
-//         std::unique_ptr<Client> client;
-//         int networkType;
-//         std::string command;        
-
-//     public:
-
-//         Command(int networkType, std::string command) 
-//             : networkType(networkType), command(command) {}
-
-//         virtual ~Command() = default;
-
-//         void send();
-//         int execute();
-//         virtual void receive() = 0;
-//         virtual std::string formatData() = 0;
-
-//         void setClient(std::string serverIp, std::string serverPort);
-// };
 
 #endif // CLIENT_COMMAND_H

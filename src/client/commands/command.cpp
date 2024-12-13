@@ -48,27 +48,13 @@ void UDPCommand::receive() {
 
 void TCPCommand::send() {
 
-    // ssize_t nleft, nwritten;
-    // char *ptr;
-
     std::string dataToSend = this->formatData();
     printf("Sending data: %s", dataToSend.c_str());
-
-    // ptr = (char *)dataToSend.c_str();
-    // nleft = dataToSend.length();
-    // while (nleft > 0) {
-    //     nwritten = write(this->client->tcp_sockfd, ptr, nleft);
-    //     if(nwritten<=0)/*error*/exit(1);
-    //     nleft-=nwritten;
-    //     ptr+=nwritten;
-    // }
 
     if (write(this->client->tcp_sockfd, dataToSend.c_str(), dataToSend.length()) == ERROR) {
         perror("Error sending data");
         exit(1);
     }
-
-    write(this->client->tcp_sockfd, "", 0);
 }
 
 int TCPCommand::execute() {
@@ -100,42 +86,3 @@ int TCPCommand::execute() {
     return 0;
 }
 
-void TCPCommand::receive() {
-    struct timeval tv;
-    tv.tv_sec = CONNECTION_TIMEOUT;
-    tv.tv_usec = 0;
-
-    // Set timeout for receiving data
-    if(setsockopt(this->client->tcp_sockfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) < 0) {
-        perror("Error setting timeout");
-        exit(1);
-    }
-
-    std::string dataReceived = "";
-    int n = 1, totalBytes = 0;
-
-    while (n != 0) {
-        char buffer[1024];
-        n = read(this->client->tcp_sockfd, buffer, sizeof(buffer));
-
-        printf("Received %d bytes\n", n);
-
-        if (n < 0) {
-            perror("Error receiving data");
-            if(tv.tv_sec == CONNECTION_TIMEOUT) {
-                perror("Connection timeout");
-            }
-            exit(1);
-        }
-
-        totalBytes += n;
-
-        if (totalBytes > MAX_TCP_REPLY_SIZE) {
-            perror("Error receiving data: reply too large");
-            exit(1);
-        }
-
-        dataReceived.append(buffer, n);
-    }
-    this->data = dataReceived.substr(0, dataReceived.length() - 1);
-}
