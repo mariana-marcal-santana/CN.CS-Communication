@@ -10,7 +10,7 @@
 class ScoreboardCommand : public TCPCommand {
     public:
         ScoreboardCommand() 
-            : TCPCommand(SCOREBOARD) {};
+            : TCPCommand(SCOREBOARD, SCOREBOARD_RESP) {};
 
         bool check() override;
         std::string exec() override;

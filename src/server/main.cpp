@@ -115,6 +115,9 @@ int main (int argc, char *argv[]) {
                     
                     Command* command = CommandHandler::createCommand(prt_str);
                     std::string response = command != nullptr ? command->execute() : ERR;
+                    if (command != nullptr) {
+                        delete command;
+                    }
                     
                     if (sendto(udp, response.c_str(), response.size(), 0, (struct sockaddr*)&udp_useraddr, addrlen) == ERROR) {
                         perror("Sendto error");
@@ -165,61 +168,18 @@ int main (int argc, char *argv[]) {
                         }
 
                         Command* command = CommandHandler::createCommand(received_data);
-
-                        std::string resp;
-                        std::vector<std::string> response;
-                        if (command == nullptr) {
-                            resp = "ERR\n";
-                        }
-                        else {
-                            resp = command->execute();
+                        std::string response = command != nullptr ? command->execute() : ERR;
+                        if (command != nullptr) {
                             delete command;
                         }
 
-                        printf("Response: %s\n", resp.c_str());
+                        printf("Response: %s\n", response.c_str());
 
-                        if ((nw = write(newfd, resp.c_str(), resp.size())) == ERROR) {
+                        if ((nw = write(newfd, response.c_str(), response.size())) == ERROR) {
                             perror("Error writing to client");
                             exit(1);
                         }
-
-
-                        // printf("id_status: %s\n", response[0].c_str());
-                        // if ((nw = write(newfd, response[0].c_str(), response[0].size())) == ERROR) {
-                        //     perror("Error writing to client (id and status)");
-                        //     exit(1);
-                        // }
-
-                        // if (response.size() > 1) {
-                            
-                        //     char fname[24];
-                        //     memset(fname, '\0', sizeof(fname));
-                        //     strcpy(fname, response[1].c_str());
-                        //     if ((nw = write(newfd, fname, 24)) == ERROR) {
-                        //         perror("Error writing to client (fname)");
-                        //         exit(1);
-                        //     }
-
-                        //     char fsize[4];
-                        //     memset(fsize, '\0', sizeof(fsize));
-                        //     strcpy(fsize, response[2].c_str());
-                        //     if ((nw = write(newfd, fsize, 4)) == ERROR) {
-                        //         perror("Error writing to client (fsize)");
-                        //         exit(1);
-                        //     }
-
-                        //     int size = std::stoi(response[2]);
-                        //     char *fdata_ptr = (char *)response[3].c_str();
-
-                        //     while (size > 0) {
-                        //         if ((nw = write(newfd, fdata_ptr, (size < BUFFER_SIZE) ? size : BUFFER_SIZE)) == ERROR) {
-                        //             perror("Error writing to client (fdata)");
-                        //             exit(1);
-                        //         }
-                        //         size -= nw; 
-                        //         fdata_ptr += nw;
-                        //     }
-                        // }
+                       
                         close(newfd);
                         exit(EXIT_SUCCESS);
                     }

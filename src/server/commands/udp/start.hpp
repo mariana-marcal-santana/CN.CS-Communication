@@ -19,7 +19,7 @@ class StartCommand : public UDPCommand {
 
     public:
         StartCommand(const std::string& plid, const std::string& timeStr)
-        : UDPCommand(START), plid(plid), max_playtime(std::stoi(timeStr)) {};
+        : UDPCommand(START, START_RESP), plid(plid), max_playtime(std::stoi(timeStr)) {};
 
         bool check() override;
         std::string exec() override;

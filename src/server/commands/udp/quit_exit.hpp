@@ -19,7 +19,7 @@ class QuitExitCommand : public UDPCommand {
 
     public:
         QuitExitCommand(const std::string& plid)
-        : UDPCommand(START), plid(plid) {};
+        : UDPCommand(QUIT_EXIT, QUIT_EXIT_RESP), plid(plid) {};
 
         bool check() override;
         std::string exec() override;

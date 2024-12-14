@@ -30,6 +30,13 @@
 #define QUIT_EXIT "QUT"
 #define DEBUG "DBG"
 
+#define START_RESP "RSG"
+#define TRY_RESP "RTR"
+#define SHOW_TRIALS_RESP "RTS"
+#define SCOREBOARD_RESP "RSS"
+#define QUIT_EXIT_RESP "RQT"
+#define DEBUG_RESP "RDB"
+
 #define OK "OK"
 #define NOK "NOK"
 #define ERR "ERR\n"

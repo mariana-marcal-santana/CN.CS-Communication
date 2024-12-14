@@ -51,7 +51,7 @@ void TryCommand::logGame(std::string code, std::time_t now, std::time_t init) {
     std::ofstream dst((std::string)DB_GAMES_PATH + "/" + this->plid + "/" + timestamp.str() + code + ".txt");
 
     if (!src.is_open() || !dst.is_open()) {
-        std::perror("Error opening files");
+        std::perror("Error opening file(s)");
         exit(1);
     }
 
@@ -61,15 +61,25 @@ void TryCommand::logGame(std::string code, std::time_t now, std::time_t init) {
     }
 
     timestamp.str("");
-    timestamp.clear(); 
+    timestamp.clear();
     timestamp << std::put_time(std::localtime(&now), "%d-%m-%Y %H:%M:%S");
     dst << timestamp.str() + " " + std::to_string(now - init) << std::endl;
+    // if (code == "T") {
+    //     timestamp << std::put_time(std::localtime(&now), "%d-%m-%Y %H:%M:%S");
+    //     dst << timestamp.str() + " " + std::to_string(now - init) << std::endl;
+    // }
+    // else {
+    //     time_t timeout = init + now;
+    //     timestamp << std::put_time(std::localtime(&timeout), "%d-%m-%Y %H:%M:%S");
+    //     dst << timestamp.str() + " " + std::to_string(now + init) << std::endl;
+    // }
 
     src.close();
     dst.close();
 
     if (std::remove(srcFileName.c_str()) == ERROR) {
         std::perror("Error deleting file");
+        exit(1);
     }
 }
 

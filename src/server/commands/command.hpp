@@ -26,14 +26,12 @@ class Command
     protected:
         int networkType;
         std::string command;
+        std::string cmd_response;
         
-
     public:
-        Command(std::string command) 
-            : command(command) {}
 
-        Command(int networkType, std::string command) 
-            : networkType(networkType), command(command) {}
+        Command(int networkType, std::string command, std::string cmd_response) 
+            : networkType(networkType), command(command), cmd_response(cmd_response) {}
 
         virtual ~Command() = default;
 
@@ -49,8 +47,8 @@ class Command
 class UDPCommand : public Command
 {
     public:
-        UDPCommand(std::string command) 
-            : Command(UDP, command) {}
+        UDPCommand(std::string command, std::string cmd_response) 
+            : Command(UDP, command, cmd_response) {}
 
     std::string execute() override;
     virtual bool check() = 0;
@@ -60,8 +58,8 @@ class UDPCommand : public Command
 class TCPCommand : public Command
 {
     public:
-        TCPCommand(std::string command) 
-            : Command(TCP, command) {}
+        TCPCommand(std::string command, std::string cmd_response) 
+            : Command(TCP, command, cmd_response) {}
 
     std::string execute() override;
     virtual bool check() = 0;

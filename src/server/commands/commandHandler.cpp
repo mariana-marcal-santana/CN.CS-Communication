@@ -2,6 +2,10 @@
 
 Command* CommandHandler::createCommand(std::string input) {
 
+    if (input.back() != '\n') {
+        return nullptr;
+    }
+
     std::istringstream iss(input);
     std::string str;
     std::vector<std::string> inputs;

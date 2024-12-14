@@ -10,7 +10,7 @@ class ShowTrialsCommand : public TCPCommand {
         std::string plid;
 
         ShowTrialsCommand(std::string plid) 
-            : TCPCommand(SHOW_TRIALS), plid(plid) {};
+            : TCPCommand(SHOW_TRIALS, SHOW_TRIALS_RESP), plid(plid) {};
 
         bool check() override;
         std::string exec() override;

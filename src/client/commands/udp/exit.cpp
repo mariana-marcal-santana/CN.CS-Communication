@@ -9,7 +9,7 @@ void ExitCommand::handleReceive() { // RQT status [C1 C2 C3 C4]
         args.push_back(arg);
     }
 
-    if (args.size() != 2 || args.size() != 6) {
+    if (args.size() != 2 && args.size() != 6) {
         std::cout << UNPARSEABLE_MSG_SERVER << std::endl;
         return;
     }

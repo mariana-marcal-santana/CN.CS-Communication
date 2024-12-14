@@ -44,6 +44,11 @@ void ScoreboardCommand::receive() {
         status.append(buf, 1);
     }
 
+    if (status == EMPTY) {
+        this->data = std::string(cmd) + " " + std::string(status);
+        return;
+    }
+
     std::string fname;
     while ((n = read(this->client->tcp_sockfd, buf, 1)))
     {
@@ -94,10 +99,11 @@ void ScoreboardCommand::receive() {
     scoreboard.close();
 
     this->data = std::string(cmd) + " " + std::string(status) + " " + std::string(fname) + " " + std::string(fsize);
-    printf("Received data: %s\n", this->data.c_str());
 }
 
 void ScoreboardCommand::handleReceive() {
+
+    printf("Received data: %s\n", this->data.c_str());
 
     std::istringstream iss(this->data);
     std::string arg;
@@ -138,30 +144,3 @@ void ScoreboardCommand::handleReceive() {
 std::string ScoreboardCommand::formatData() {
     return "SSB\n";
 }   
-
-
-// char id_status[10] = "";
-//     if ((n = read(this->client->tcp_sockfd, id_status, 9)) == ERROR) {
-//         perror("Error receiving data (id_status)");
-//         exit(1);
-//     }
-//     id_status[n] = '\0';
-
-//     if (strstr(id_status, EMPTY) != nullptr) {
-//         this->data = EMPTY;
-//         return;
-//     }
-
-//     char fname[25];
-//     if ((n = read(this->client->tcp_sockfd, fname, 24)) == ERROR) {
-//         perror("Error receiving data (fname)");
-//         exit(1);
-//     }
-//     fname[n] = '\0';
-
-//     char fsize[4];
-//     if ((n = read(this->client->tcp_sockfd, fsize, 4)) == ERROR) {
-//         perror("Error receiving data (fsize)");
-//         exit(1);
-//     }
-//     fsize[n] = '\0';

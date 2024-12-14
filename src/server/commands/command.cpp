@@ -1,15 +1,14 @@
 #include "command.hpp"
 
 std::string UDPCommand::execute() {
-    printf("execute");
     if (!this->check())
-        return this->command + " ERR\n";
+        return this->cmd_response + " ERR\n";
     return this->exec();
 }
 
 std::string TCPCommand::execute() {
     if (!this->check())
-        return this->command + " ERR\n";
+        return this->cmd_response + " ERR\n";
     return this->exec();
 }
 

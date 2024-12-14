@@ -25,7 +25,7 @@ class TryCommand : public UDPCommand {
 
     public:
         TryCommand(std::string plid, std::string C1, std::string C2, std::string C3, std::string C4, std::string nT) 
-            : UDPCommand(TRY), plid(plid), C1(C1), C2(C2), C3(C3), C4(C4), nT(nT) {};
+            : UDPCommand(TRY, TRY_RESP), plid(plid), C1(C1), C2(C2), C3(C3), C4(C4), nT(nT) {};
 
         bool check() override;
         std::string exec() override;
