@@ -1,46 +1,33 @@
 #include "quit_exit.hpp"
 
-
 bool QuitExitCommand::check() {
-    return this->plid.length() == 6 && std::all_of(this->plid.begin(), this->plid.end(), ::isdigit);
+    if (this->plid.length() != 6 || !std::all_of(this->plid.begin(), this->plid.end(), ::isdigit)) {
+        return false;
+    }
+    return true;
 }
 
-std::string QuitExitCommand::exec(){
+std::string QuitExitCommand::exec() {
+
+    // playerInfo: plid mode colors time date hour timestamp
+    std::string playerInfo = this->findPlayerInfo(this->plid);
     
-    std::string playerInfo = findPlayerInfo(this->plid);
+    // no active game
     if (playerInfo == "")
         return "RQT NOK\n";
 
-    namespace fs = std::filesystem;
-    fs::path dirPath = fs::path(DB_GAMES_PATH + '/' + this->plid);
-    fs::path filePath = fs::path((std::string)DB_GAMES_PATH + '/' + "GAMES_" + this->plid + ".txt");
-
-    if (!fs::exists(dirPath)) {
-        fs::create_directory(dirPath);
-    }
-
     std::istringstream iss(playerInfo);
-    std::string str;
+    std::string arg;
     std::vector<std::string> args;
-    while (iss >> str) { args.push_back(str); }
+    while (iss >> arg) { args.push_back(arg); }
 
-    std::string date = args[4] + "_" + args[5];
-
-    date.erase(std::remove_if(date.begin(), date.end(), [](char c) {
-        return c == '-' || c == ':';
-    }), date.end());
-
-    std::string newfileName = date + "_" + "X" + ".txt"; //o code não está bem, falta fazer
-
-    fs::path newfilePath = dirPath / fs::path(newfileName);
-
-    try {
-        fs::rename(filePath, newfilePath);
-    } catch (const fs::filesystem_error& e) {
-        std::cerr << "Error renaming file: " << e.what() << "\n";
-    }
+    std::time_t now = std::time(nullptr);
+    this->logGame("Q", now, std::stoi(args[6]));
     
-    return (std::string)"RQT OK " + playerInfo[9] + " " + playerInfo[10] + " " + playerInfo[11] + " " + playerInfo[12] + "\n";
+    std::string result = "RQT OK";
+    for (size_t i = 0; i < args[2].length(); i++) {
+        result += " " + args[2].substr(i, 1);
+    }
+
+    return result + " \n";
 }
-
-

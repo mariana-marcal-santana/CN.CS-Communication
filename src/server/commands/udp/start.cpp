@@ -1,32 +1,53 @@
 #include "start.hpp"
 
-bool StartCommand::check() {
-    return this->plid.length() == 6 && std::all_of(this->plid.begin(), this->plid.end(), ::isdigit) 
-    && this->max_playtime < 601 && std::to_string(this->max_playtime).size() == 3;
+std::string StartCommand::genColors() {
+    std::vector<std::string> colors = {"R", "G", "B", "Y", "O", "P"};
+    
+    std::mt19937 rng(static_cast<unsigned>(std::time(nullptr)));
+    std::uniform_int_distribution<size_t> dist(0, colors.size() - 1);
+
+    std::string result;
+    for (size_t i = 0; i < 4; ++i) {
+        result += colors[dist(rng)];
+    }
+
+    return result;
 }
 
-std::string StartCommand::generateColorKey() {
-    const std::vector<std::string> colors = {"R", "G", "B", "Y", "O", "P"};
-    std::string key;
-
-    std::srand(std::time(0)); 
-
-    for (int i = 0; i < 4; i++){
-        int idx = std::rand() % colors.size();
-        key += colors[idx];
+bool StartCommand::check() {
+    if (this->plid.length() != 6 || !std::all_of(this->plid.begin(), this->plid.end(), ::isdigit)) {
+        return false;
     }
-    return key;
+    if (!std::all_of(this->max_playtime.begin(), this->max_playtime.end(), ::isdigit) ||
+        std::stoi(this->max_playtime) < 1 || std::stoi(this->max_playtime) > CONNECTION_TIMEOUT) {
+        return false;
+    }
+    return true;
 }
 
 std::string StartCommand::exec() {
-
+    // playerInfo: plid mode colors time date hour timestamp
     std::string playerInfo = this->findPlayerInfo(this->plid);
     
-    if (playerInfo == "")
+    // active game
+    if (playerInfo != "" && getPlayerTries(this->plid).size() > 0)
         return "RSG NOK\n";
 
-    std::string key = generateColorKey();
-    createPlayerFile(this->plid, 'P', key, this->max_playtime);
+    std::ofstream file((std::string)DB_GAMES_PATH + "/GAME_" + this->plid + ".txt");
+    if (!file.is_open()) {
+        std::cerr << "Unable to open file." << std::endl;
+        exit(1);
+    }
+
+    std::time_t currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    std::tm localTime = *std::localtime(&currentTime);
+    std::ostringstream timeStream;
+    timeStream << std::put_time(&localTime, "%Y-%m-%d %H:%M:%S");
+
+    file << this->plid + " P " + this->genColors() + " " + this->max_playtime + 
+        " " + timeStream.str() + " " + std::to_string(std::time(nullptr)) << std::endl;
+
+    file.close();
 
     return "RSG OK\n";
 }
