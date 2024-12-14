@@ -37,29 +37,7 @@ std::string TryCommand::evalLogTry(std::string solution, std::string time) {
     return result;
 }
 
-std::vector<std::string> TryCommand::getPlayerTries(std::string plid) {
-    printf("getPlayerTries");
-    std::ifstream file((std::string)DB_GAMES_PATH + "/GAME_" + plid + ".txt");
-    if (!file) {
-        std::cerr << "Unable to open file." << std::endl;
-        exit(1);
-    }
-    std::string line;
-    std::vector<std::string> tries;
-    while (std::getline(file, line)) {
-        if (line[0] == 'T') {
-            std::istringstream iss(line);
-            std::vector<std::string> args;
-            std::string arg;
-            while (iss >> arg) {
-                args.push_back(arg);
-            }
-            tries.push_back(args[1]);
-        }
-    }
-    file.close();
-    return tries;
-}
+
 
 void TryCommand::logGame(std::string code, std::time_t now, std::time_t init) {
 
@@ -134,13 +112,12 @@ bool TryCommand::check() {
 }
 
 std::string TryCommand::exec() {
-    printf("execTry");
+
     // playerInfo: plid mode colors time date hour timestamp
     std::string playerInfo = this->findPlayerInfo(this->plid);
     
     // no active game
     if (playerInfo == "") {
-        printf("no active game");
         return "RTR NOK\n";
     }
 
@@ -155,7 +132,6 @@ std::string TryCommand::exec() {
 
     // game timeout
     if (now - std::stoi(args[6]) > std::stoi(args[3])) {
-        printf("timeout");
         this->logGame("T", now, std::stoi(args[6]));
         std::string result = "RTR ETM";
         for (size_t i = 0; i < args[2].length(); i++)
@@ -167,7 +143,6 @@ std::string TryCommand::exec() {
 
     // too many tries
     if (std::atoi(this->nT.c_str()) > MAX_TRIES) {
-        printf("too many tries");
         this->logGame("F", now, std::stoi(args[6]));
         std::string result = "RTR ENT";
         for (size_t i = 0; i < args[2].length(); i++)
@@ -184,7 +159,6 @@ std::string TryCommand::exec() {
 
     // invalid try number
     if (std::stoi(this->nT) != static_cast<int>(tries.size() + 1)) {
-        printf("invalid try number");
         return "RTR INV\n";
     }
 

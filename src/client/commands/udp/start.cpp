@@ -2,6 +2,21 @@
 
 void StartCommand::handleReceive() { // RSG status
 
+    std::istringstream iss(this->data);
+    std::string arg;
+    std::vector<std::string> args;
+    while (iss >> arg) {
+        args.push_back(arg);
+    }
+    
+    if (args.size() != 2) {
+        std::cout << UNPARSEABLE_MSG_SERVER << std::endl;
+        return;
+    }
+    if (args[0] != RSG) {
+        std::cout << WRONG_COMMAND_MSG_SERVER << std::endl;
+        return;
+    }
     if (this->data.find("NOK") != std::string::npos) { 
         std::cout << "There's already an ongoing game for this PLID." << std::endl;
     } 

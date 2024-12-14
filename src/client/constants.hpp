@@ -22,6 +22,12 @@
 #define EXIT "exit"
 #define DEBUG "debug"
 
+#define RDB "RDB"
+#define RSS "RSS"
+#define RST "RST"
+#define RQT "RQT"
+#define RSG "RSG"
+
 #define OK "OK"
 #define NOK "NOK"
 #define ERR "ERR"
@@ -38,6 +44,8 @@
 
 #define ERROR -1
 #define INVALID_COMMAND_MSG "Invalid command"
+#define UNPARSEABLE_MSG_SERVER "Unparseable message from server"
+#define WRONG_COMMAND_MSG_SERVER "Wrong command from server"
 #define HAS_STARTED_GAME "You have already started a game"
 
 #endif

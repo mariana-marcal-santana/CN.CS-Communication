@@ -9,6 +9,16 @@ void DebugCommand::handleReceive() { // RDB status
         args.push_back(arg);
     }
 
+    if (args.size() != 2) {
+        std::cout << UNPARSEABLE_MSG_SERVER << std::endl;
+        return;
+    }
+
+    if (args[0] != RDB) {
+        std::cout << WRONG_COMMAND_MSG_SERVER << std::endl;
+        return;
+    }
+
     if (args[1] == OK) { 
         std::cout << "Debug game has started!" << std::endl;
     } 

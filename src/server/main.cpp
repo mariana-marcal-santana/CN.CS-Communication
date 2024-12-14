@@ -99,8 +99,6 @@ int main (int argc, char *argv[]) {
 
                 if (FD_ISSET(udp, &testfds)) {
 
-                    printf("UDPCommand received\n");
-
                     addrlen = sizeof(udp_useraddr);
                     std::memset(prt_str, '\0', sizeof(prt_str   ));
                     if (recvfrom(udp, prt_str, 80, 0, (struct sockaddr *) &udp_useraddr, &addrlen) == ERROR) {
@@ -110,7 +108,7 @@ int main (int argc, char *argv[]) {
 
                     if (verbose) {
                         if (getnameinfo((struct sockaddr *) &udp_useraddr, addrlen, host, sizeof host, service, sizeof service, 0) == 0) {
-                            printf("Sent by [%s:%s]: %s", host, service, prt_str);
+                            printf("UDP command sent by [%s:%s]: %s", host, service, prt_str);
                             fflush(stdout);
                         }
                     }
@@ -126,8 +124,6 @@ int main (int argc, char *argv[]) {
 
                 if (FD_ISSET(tcp, &testfds)) {
 
-                    printf("TCPCommand received\n");
-                    
                     addrlen = sizeof(tcp_useraddr);
                     do newfd = accept(tcp, (struct sockaddr *) &tcp_useraddr, &addrlen);
                     while (newfd == -1 && errno == EINTR);
@@ -138,7 +134,6 @@ int main (int argc, char *argv[]) {
                     }
 
                     // fork
-                    printf("Forking\n");
                     if ((pid = fork()) == ERROR) {
                         perror("Fork error");
                         exit(1);
@@ -149,27 +144,22 @@ int main (int argc, char *argv[]) {
 
                         std::string received_data;
 
-                        while (true) {
-                            n = read(newfd, buffer, BUFFER_SIZE);
-                            printf("%d\n", n);
+                        char buf[2];
+                        memset(buf, '\0', sizeof(buf));
+                        while ((n = read(newfd, buffer, 1)) > 0) {
                             if (n == ERROR) {
-                                if (errno == EAGAIN || errno == EWOULDBLOCK) {
-                                    break;
-                                }
-                                else {
-                                    perror("Error reading from client");
-                                    exit(1);
-                                }
-                            }
-                            else if (n == 0) {
-                                break;
+                                perror("Error reading from client");
+                                exit(1);
                             }
                             received_data.append(buffer, n);
+                            if (buffer[0] == '\n') {
+                                break;
+                            }
                         }
 
                         if (verbose) {
                             if (getnameinfo((struct sockaddr *) &tcp_useraddr, addrlen, host, sizeof host, service, sizeof service, 0) == 0) {
-                                printf("Sent by [%s:%s]: %s", host, service, received_data.c_str());
+                                printf("TCP command sent by [%s:%s]: %s", host, service, received_data.c_str());
                                 fflush(stdout);
                             }
                         }
@@ -183,47 +173,53 @@ int main (int argc, char *argv[]) {
                         }
                         else {
                             resp = command->execute();
-                            TCPCommand* tcp_command = dynamic_cast<TCPCommand*>(command);
-                            response = tcp_command->parseToSend();
                             delete command;
                         }
 
-                        printf("id_status: %s\n", response[0].c_str());
-                        if ((nw = write(newfd, response[0].c_str(), response[0].size())) == ERROR) {
-                            perror("Error writing to client (id and status)");
+                        printf("Response: %s\n", resp.c_str());
+
+                        if ((nw = write(newfd, resp.c_str(), resp.size())) == ERROR) {
+                            perror("Error writing to client");
                             exit(1);
                         }
 
-                        if (response.size() > 1) {
+
+                        // printf("id_status: %s\n", response[0].c_str());
+                        // if ((nw = write(newfd, response[0].c_str(), response[0].size())) == ERROR) {
+                        //     perror("Error writing to client (id and status)");
+                        //     exit(1);
+                        // }
+
+                        // if (response.size() > 1) {
                             
-                            char fname[24];
-                            memset(fname, '\0', sizeof(fname));
-                            strcpy(fname, response[1].c_str());
-                            if ((nw = write(newfd, fname, 24)) == ERROR) {
-                                perror("Error writing to client (fname)");
-                                exit(1);
-                            }
+                        //     char fname[24];
+                        //     memset(fname, '\0', sizeof(fname));
+                        //     strcpy(fname, response[1].c_str());
+                        //     if ((nw = write(newfd, fname, 24)) == ERROR) {
+                        //         perror("Error writing to client (fname)");
+                        //         exit(1);
+                        //     }
 
-                            char fsize[4];
-                            memset(fsize, '\0', sizeof(fsize));
-                            strcpy(fsize, response[2].c_str());
-                            if ((nw = write(newfd, fsize, 4)) == ERROR) {
-                                perror("Error writing to client (fsize)");
-                                exit(1);
-                            }
+                        //     char fsize[4];
+                        //     memset(fsize, '\0', sizeof(fsize));
+                        //     strcpy(fsize, response[2].c_str());
+                        //     if ((nw = write(newfd, fsize, 4)) == ERROR) {
+                        //         perror("Error writing to client (fsize)");
+                        //         exit(1);
+                        //     }
 
-                            int size = std::stoi(response[2]);
-                            char *fdata_ptr = (char *)response[3].c_str();
+                        //     int size = std::stoi(response[2]);
+                        //     char *fdata_ptr = (char *)response[3].c_str();
 
-                            while (size > 0) {
-                                if ((nw = write(newfd, fdata_ptr, (size < BUFFER_SIZE) ? size : BUFFER_SIZE)) == ERROR) {
-                                    perror("Error writing to client (fdata)");
-                                    exit(1);
-                                }
-                                size -= nw; 
-                                fdata_ptr += nw;
-                            }
-                        }
+                        //     while (size > 0) {
+                        //         if ((nw = write(newfd, fdata_ptr, (size < BUFFER_SIZE) ? size : BUFFER_SIZE)) == ERROR) {
+                        //             perror("Error writing to client (fdata)");
+                        //             exit(1);
+                        //         }
+                        //         size -= nw; 
+                        //         fdata_ptr += nw;
+                        //     }
+                        // }
                         close(newfd);
                         exit(EXIT_SUCCESS);
                     }

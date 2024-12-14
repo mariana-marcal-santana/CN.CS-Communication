@@ -12,7 +12,6 @@ void UDPCommand::send() {
 
 int UDPCommand::execute() {
     this->send();
-    printf("sent\n");
     this->receive();
     printf("Received data: %s\n", this->data.c_str());
     this->handleReceive();

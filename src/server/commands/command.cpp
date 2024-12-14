@@ -10,48 +10,7 @@ std::string UDPCommand::execute() {
 std::string TCPCommand::execute() {
     if (!this->check())
         return this->command + " ERR\n";
-    this->data = this->exec();
-    return "";
-}
-
-std::vector<std::string> TCPCommand::parseToSend() {
-
-    // returns a vector with [id_status, fname, fsize, fdata]
-
-    // no file to send
-    if (std::count(this->data.begin(), this->data.end(), ' ') == 1) {
-        
-        std::string id_status = this->data.substr(0, this->data.size() - 1);
-        id_status.resize(9, ' ');
-        
-        return {id_status};
-    }
-
-    size_t space = this->data.find(' ');
-    space = this->data.find(' ', space + 1);
-    std::string id_status = this->data.substr(0, space);
-
-    printf("id_status: %s.", id_status.c_str());
-
-    ssize_t space2 = this->data.find(' ', space + 1);
-    std::string fname = this->data.substr(space + 1, space2 - space - 1);
-
-    printf("fname: %s.", fname.c_str());
-    fflush(stdout);
-
-    space = space2;
-    space2 = this->data.find(' ', space2 + 1);
-    std::string fsize = this->data.substr(space + 1, space2 - space - 1);
-
-    printf("fsize: %s.", fsize.c_str());
-    fflush(stdout);
-
-    std::string fdata = this->data.substr(space2 + 1, this->data.size() - space2 - 1);
-
-    printf("fdata: %s.", fdata.c_str());
-    fflush(stdout);
-    
-    return {id_status, fname, fsize, fdata};
+    return this->exec();
 }
 
 std::string Command::findPlayerInfo(std::string plid) { 
@@ -77,6 +36,30 @@ std::string Command::findPlayerInfo(std::string plid) {
         std::cerr << "Error: " << err.what() << std::endl;
     }
     return "";
+}
+
+std::vector<std::string> Command::getPlayerTries(std::string plid) {
+
+    std::ifstream file((std::string)DB_GAMES_PATH + "/GAME_" + plid + ".txt");
+    if (!file) {
+        std::cerr << "Unable to open file." << std::endl;
+        exit(1);
+    }
+    std::string line;
+    std::vector<std::string> tries;
+    while (std::getline(file, line)) {
+        if (line[0] == 'T') {
+            std::istringstream iss(line);
+            std::vector<std::string> args;
+            std::string arg;
+            while (iss >> arg) {
+                args.push_back(arg);
+            }
+            tries.push_back(args[1]);
+        }
+    }
+    file.close();
+    return tries;
 }
 
 int Command::createPlayerFile(std::string plid, char mode, std::string key, int time){

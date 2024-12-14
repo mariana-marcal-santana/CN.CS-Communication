@@ -3,6 +3,8 @@
 
 #include "../command.hpp"
 #include <iostream>
+#include <sstream>
+#include <vector>
 
 class StartCommand : public UDPCommand {
 

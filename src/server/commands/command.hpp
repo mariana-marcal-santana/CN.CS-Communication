@@ -26,7 +26,7 @@ class Command
     protected:
         int networkType;
         std::string command;
-        std::string data;
+        
 
     public:
         Command(std::string command) 
@@ -37,11 +37,12 @@ class Command
 
         virtual ~Command() = default;
 
+        std::string data;
         virtual std::string execute() = 0;
         virtual bool check() = 0;
         virtual std::string exec() = 0;
         std::string findPlayerInfo(std::string plid);
-        int getPlayerTries(std::string plid);
+        std::vector<std::string> getPlayerTries(std::string plid);
         int createPlayerFile(std::string plid, char mode, std::string key, int time);
 };
 
@@ -65,8 +66,6 @@ class TCPCommand : public Command
     std::string execute() override;
     virtual bool check() = 0;
     virtual std::string exec() = 0;
-    std::vector<std::string> parseToSend();
-
 };
 
 
