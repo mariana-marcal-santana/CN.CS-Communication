@@ -1,3 +1,4 @@
 player.o
 server.o
 *.txt
+*.html

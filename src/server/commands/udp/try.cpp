@@ -15,7 +15,7 @@ std::string TryCommand::calcScore(int tries, int seconds) {
 }
 
 std::string TryCommand::evalLogTry(std::string solution, std::string time) {
-    printf("evalLogTry");
+
     std::string guess = this->C1 + this->C2 + this->C3 + this->C4;
     for (size_t i = 0; i < solution.length(); i++) {
         if (solution[i] == guess[i]) 
@@ -55,24 +55,32 @@ void TryCommand::logGame(std::string code, std::time_t now, std::time_t init) {
         exit(1);
     }
 
+    std::string firstLine;
     std::string line;
+    if (std::getline(src, firstLine)) {
+        dst << firstLine << std::endl; // save first line to get timestamps for timeout
+    }
+
     while (std::getline(src, line)) {
         dst << line << std::endl;
     }
 
     timestamp.str("");
     timestamp.clear();
-    timestamp << std::put_time(std::localtime(&now), "%d-%m-%Y %H:%M:%S");
-    dst << timestamp.str() + " " + std::to_string(now - init) << std::endl;
-    // if (code == "T") {
-    //     timestamp << std::put_time(std::localtime(&now), "%d-%m-%Y %H:%M:%S");
-    //     dst << timestamp.str() + " " + std::to_string(now - init) << std::endl;
-    // }
-    // else {
-    //     time_t timeout = init + now;
-    //     timestamp << std::put_time(std::localtime(&timeout), "%d-%m-%Y %H:%M:%S");
-    //     dst << timestamp.str() + " " + std::to_string(now + init) << std::endl;
-    // }
+    if (code == "T") {
+        // last line is the timestamp of the timeout
+        std::istringstream iss(firstLine);
+        std::vector<std::string> args;
+        std::string arg;
+        while (iss >> arg) { args.push_back(arg); }
+        time_t timeout = std::stoi(args[3]) + std::stoi(args[6]);
+        timestamp << std::put_time(std::localtime(&timeout), "%d-%m-%Y %H:%M:%S");
+        dst << timestamp.str() + " " + std::to_string(timeout) << std::endl;
+    }
+    else {
+        timestamp << std::put_time(std::localtime(&now), "%d-%m-%Y %H:%M:%S");
+        dst << timestamp.str() + " " + std::to_string(now - init) << std::endl;
+    }
 
     src.close();
     dst.close();
@@ -94,7 +102,6 @@ void TryCommand::logGame(std::string code, std::string colors, std::string mode,
 
     std::ofstream file((std::string)DB_SCORES_PATH + "/" + score + "_" + this->plid + timestamp.str() + ".txt");
     if (!file.is_open()) {
-        printf("file score");
         std::perror("Unable to open file");
         exit(1);
     }
