@@ -1,10 +1,108 @@
 #include "showtrials.hpp"
 
 void ShowTrialsCommand::receive() {
-    return;
+    // Set timeout for receiving data
+    struct timeval tv;
+    tv.tv_sec = 1;
+    tv.tv_usec = 0;
+    if (setsockopt(this->client->tcp_sockfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) == ERROR) {
+        perror("Error setting timeout");
+        exit(1);
+    }
+
+    int n;
+
+    char buf[2];
+    memset(buf, '\0', sizeof(buf));
+
+    std::string cmd;
+    while ((n = read(this->client->tcp_sockfd, buf, 1)))
+    {
+        if (n == ERROR) {
+            perror("Error receiving data");
+            exit(1);
+        }
+        buf[1] = '\0';
+        if (strcmp(buf, " ") == 0) {
+            break;
+        }
+        cmd.append(buf, 1);
+    }
+    
+    std::string status;
+    while ((n = read(this->client->tcp_sockfd, buf, 1)))
+    {
+        if (n == ERROR) {
+            perror("Error receiving data");
+            exit(1);
+        }
+        buf[1] = '\0';
+        if (strcmp(buf, " ") == 0) {
+            break;
+        }
+        status.append(buf, 1);
+    }
+
+    if (status == NOK) {
+        this->data = std::string(cmd) + " " + std::string(status);
+        return;
+    }
+
+    std::string fname;
+    while ((n = read(this->client->tcp_sockfd, buf, 1)))
+    {
+        if (n == ERROR) {
+            perror("Error receiving data");
+            exit(1);
+        }
+        buf[1] = '\0';
+        if (strcmp(buf, " ") == 0) {
+            break;
+        }
+        fname.append(buf, 1);
+    }
+
+    std::string fsize;
+    while ((n = read(this->client->tcp_sockfd, buf, 1)))
+    {
+        if (n == ERROR) {
+            perror("Error receiving data");
+            exit(1);
+        }
+        buf[1] = '\0';
+        if (strcmp(buf, " ") == 0) {
+            break;
+        }
+        fsize.append(buf, 1);
+    }    
+
+    char buffer[BUFFER_SIZE];
+    std::string fdata = "";
+    int size = std::stoi(fsize);
+
+    while (size > 0) {
+        if ((n = read(this->client->tcp_sockfd, buffer, (size < BUFFER_SIZE) ? size : BUFFER_SIZE)) == ERROR) {
+            perror("Error writing to client (fdata)");
+            exit(1);
+        }
+        size -= n;
+        fdata.append(buffer, n);
+    }
+
+    std::ofstream scoreboard(fname);
+    if (!scoreboard.is_open()) {
+        perror("Unable to open file");
+        exit(1);
+    }
+    scoreboard << fdata;
+    scoreboard.close();
+
+    this->data = std::string(cmd) + " " + std::string(status) + " " + std::string(fname) + " " + std::string(fsize);
 }
 
 void ShowTrialsCommand::handleReceive() { // RST status [Fname Fsize Fdata]
+
+    printf("Received data: %s\n", this->data.c_str());
 
     std::istringstream iss(this->data);
     std::string arg;
@@ -12,16 +110,34 @@ void ShowTrialsCommand::handleReceive() { // RST status [Fname Fsize Fdata]
     while (iss >> arg) {
         args.push_back(arg);
     }
-
-    if (args[1] == ACT) { 
-        std::cout << this->data << std::endl;
-    } 
-    else if (args[1] == FIN) {
-        std::cout << this->data << std::endl;
+    
+    if (args.size() != 4) {
+        std::cout << UNPARSEABLE_MSG_SERVER << std::endl;
+        return;
     }
+
+    if (args[0] != RST) {
+        std::cout << WRONG_COMMAND_MSG_SERVER << std::endl;
+        return;
+    }
+
     else if (args[1] == NOK) {
         std::cout << "There're no games for this player." << std::endl;
+        return;
     }
+
+    printf("Trials:\n");
+
+    std::ifstream trials(args[2]);
+    if (!trials.is_open()) {
+        perror("Unable to open file");
+        exit(1);
+    }
+
+    std::string line;
+    while (std::getline(trials, line)) {
+        std::cout << line << std::endl;
+    }    
 }
 
 std::string ShowTrialsCommand::formatData() {
