@@ -46,13 +46,17 @@ class Command
 
 class UDPCommand : public Command
 {
+    protected:
+        std::string plid;
+
     public:
-        UDPCommand(std::string command, std::string cmd_response) 
-            : Command(UDP, command, cmd_response) {}
+        UDPCommand(std::string command, std::string cmd_response, std::string plid) 
+            : Command(UDP, command, cmd_response), plid(plid) {}
 
     std::string execute() override;
     virtual bool check() = 0;
     virtual std::string exec() = 0; 
+    void logGame(std::string code, std::time_t now, std::time_t init);
 };
 
 class TCPCommand : public Command

@@ -33,7 +33,6 @@ int main(int argc, char** argv) {
         Command* command = CommandHandler::createCommand(args);
 
         if (command == nullptr) {
-            printf("%s: check command requirements.\n", INVALID_COMMAND_MSG);
             continue;
         }
         else {

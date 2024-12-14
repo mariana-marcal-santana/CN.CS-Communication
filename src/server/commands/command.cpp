@@ -61,6 +61,51 @@ std::vector<std::string> Command::getPlayerTries(std::string plid) {
     return tries;
 }
 
+void UDPCommand::logGame(std::string code, std::time_t now, std::time_t init) {
+
+    std::ostringstream timestamp;
+    timestamp << std::put_time(std::localtime(&now), "%Y%m%d_%H%M%S_");
+
+    std::string srcFileName = (std::string)DB_GAMES_PATH + "/GAME_" + this->plid + ".txt";
+    std::ifstream src(srcFileName);
+
+    std::filesystem::create_directories((std::string)DB_GAMES_PATH + "/" + this->plid);
+    std::ofstream dst((std::string)DB_GAMES_PATH + "/" + this->plid + "/" + timestamp.str() + code + ".txt");
+
+    if (!src.is_open() || !dst.is_open()) {
+        std::perror("Error opening file(s)");
+        exit(1);
+    }
+
+    std::string line;
+    while (std::getline(src, line)) {
+        dst << line << std::endl;
+    }
+
+    timestamp.str("");
+    timestamp.clear();
+    timestamp << std::put_time(std::localtime(&now), "%d-%m-%Y %H:%M:%S");
+    dst << timestamp.str() + " " + std::to_string(now - init) << std::endl;
+    // if (code == "T") {
+    //     timestamp << std::put_time(std::localtime(&now), "%d-%m-%Y %H:%M:%S");
+    //     dst << timestamp.str() + " " + std::to_string(now - init) << std::endl;
+    // }
+    // else {
+    //     time_t timeout = init + now;
+    //     timestamp << std::put_time(std::localtime(&timeout), "%d-%m-%Y %H:%M:%S");
+    //     dst << timestamp.str() + " " + std::to_string(now + init) << std::endl;
+    // }
+
+    src.close();
+    dst.close();
+
+    if (std::remove(srcFileName.c_str()) == ERROR) {
+        std::perror("Error deleting file");
+        exit(1);
+    }
+}
+
+
 int Command::createPlayerFile(std::string plid, char mode, std::string key, int time){
     std::string playerInfo;
     std::string filename = "GAME_" + plid + ".txt";

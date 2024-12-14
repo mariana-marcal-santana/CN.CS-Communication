@@ -2,32 +2,51 @@
 
 Command* CommandHandler::createCommand(std::vector<std::string> args) {
 
-    if (args.size() == 3 && args[0] == START) {
-        return new StartCommand(args[1], args[2]);
+    if (args.size() < 1) {
+        printf("%s: check command requirements.\n", INVALID_COMMAND_MSG);
+        return nullptr;
+    }
+
+    if (args[0] == START) {
+        if (verifCommandStart(args)) {
+            return new StartCommand(args[1], args[2]);
+        }
     } 
-    else if (args.size() == 5 && args[0] == TRY) {
-        return new TryCommand(args[1], args[2], args[3], args[4]);
+    else if (args[0] == TRY) {
+        if (verifCommandTry(args)) {
+            return new TryCommand(args[1], args[2], args[3], args[4]);
+        }
     } 
-    else if (args.size() == 1 && (args[0] == SHOW_TRIALS || args[0] == ST)) {
-        return new ShowTrialsCommand();
+    else if (args[0] == SHOW_TRIALS || args[0] == ST) {
+        if (verifCommandShowTrials(args)) {
+            return new ShowTrialsCommand();
+        }
     } 
-    else if (args.size() == 1 && (args[0] == SCOREBOARD || args[0] == SB)) {
-        return new ScoreboardCommand();
+    else if (args[0] == SCOREBOARD || args[0] == SB) {
+        if (verifCommandScoreboard(args)) {
+            return new ScoreboardCommand();
+        }
     } 
-    else if (args.size() == 1 && args[0] == QUIT) {
-        return new QuitCommand();
+    else if (args[0] == QUIT) {
+        if (verifCommandQuit(args)) {
+            return new QuitCommand();
+        }
     } 
-    else if (args.size() == 1 && args[0] == EXIT) {
-        return new ExitCommand();
+    else if (args[0] == EXIT) {
+        if (verifCommandExit(args)) {
+            return new ExitCommand();
+        }
     } 
-    else if (args.size() == 7 && args[0] == DEBUG) {
-        return new DebugCommand(args[1], args[2], args[3], args[4], args[5], args[6]);
-    } 
+    else if (args[0] == DEBUG) {
+        if (verifCommandDebug(args)) {
+            return new DebugCommand(args[1], args[2], args[3], args[4], args[5], args[6]);
+        }
+    }
+    else {
+        printf("%s: check command requirements.\n", INVALID_COMMAND_MSG);
+    }
     return nullptr;
 }
-
-
-// not in use
 
 bool CommandHandler::verifCommandStart(std::vector<std::string> args) {
 
@@ -41,8 +60,8 @@ bool CommandHandler::verifCommandStart(std::vector<std::string> args) {
         return false;
     }
 
-    if (std::stoi(args[2]) > 600) {
-        printf("%s: max_playtime must be less than 600\n", INVALID_COMMAND_MSG);
+    if (std::stoi(args[2]) > 600 || std::stoi(args[2]) < 1) {
+        printf("%s: max_playtime must be between 1 and 600 seconds\n", INVALID_COMMAND_MSG);
         return false;
     }
 
@@ -59,7 +78,7 @@ bool CommandHandler::verifCommandTry(std::vector<std::string> args) {
     std::vector<std::string> colors = {"R", "G", "B", "Y", "O", "P"};
     for (int i = 1; i < 5; i++) {
         if (std::find(colors.begin(), colors.end(), args[1]) == colors.end()) {
-            printf("%s: invalid color names\n", INVALID_COMMAND_MSG);
+            printf("%s: invalid color codes (R G B Y O P)\n", INVALID_COMMAND_MSG);
             return false;
         }
     }
