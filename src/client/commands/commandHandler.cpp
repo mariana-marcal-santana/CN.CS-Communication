@@ -77,7 +77,7 @@ bool CommandHandler::verifCommandTry(std::vector<std::string> args) {
 
     std::vector<std::string> colors = {"R", "G", "B", "Y", "O", "P"};
     for (int i = 1; i < 5; i++) {
-        if (std::find(colors.begin(), colors.end(), args[1]) == colors.end()) {
+        if (std::find(colors.begin(), colors.end(), args[i]) == colors.end()) {
             printf("%s: invalid color codes (R G B Y O P)\n", INVALID_COMMAND_MSG);
             return false;
         }
@@ -142,7 +142,7 @@ bool CommandHandler::verifCommandDebug(std::vector<std::string> args) {
 
     std::vector<std::string> colors = {"R", "G", "B", "Y", "O", "P"};
     for (int i = 3; i < 7; i++) {
-        if (std::find(colors.begin(), colors.end(), args[1]) == colors.end()) {
+        if (std::find(colors.begin(), colors.end(), args[i]) == colors.end()) {
             printf("%s: invalid color names\n", INVALID_COMMAND_MSG);
             return false;
         }

@@ -36,7 +36,10 @@ int main(int argc, char** argv) {
             continue;
         }
         else {
-            if (args[0] == START) { client->plid = args[1]; }
+            if (args[0] == START || args[0] == DEBUG) { 
+                client->plid = args[1];
+                client->tries = 1;
+            }
 
             command->client = std::unique_ptr<Client>(client);
             exit = command->execute();

@@ -75,6 +75,10 @@ int main (int argc, char *argv[]) {
     FD_SET(tcp, &inputs);
     
     printf("Server is running\n");
+
+    // make sure the db directories exist
+    std::filesystem::create_directories((std::string)DB_GAMES_PATH);
+    std::filesystem::create_directories((std::string)DB_SCORES_PATH);
     
     while (1) {
         testfds = inputs;
