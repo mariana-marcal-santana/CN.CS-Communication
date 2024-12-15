@@ -22,6 +22,15 @@ std::string QuitExitCommand::exec() {
     while (iss >> arg) { args.push_back(arg); }
 
     std::time_t now = std::time(nullptr);
+    std::ostringstream timestamp;
+    timestamp << std::put_time(std::localtime(&now), "%Y%m%d_%H%M%S_");
+
+    // game timeout
+    if (now - std::stoi(args[6]) > std::stoi(args[3])) {
+        this->logGame("T", now, std::stoi(args[6]));
+        return "RQT NOK\n";
+    }
+
     this->logGame("Q", now, std::stoi(args[6]));
     
     std::string result = "RQT OK";
@@ -29,5 +38,5 @@ std::string QuitExitCommand::exec() {
         result += " " + args[2].substr(i, 1);
     }
 
-    return result + " \n";
+    return result + "\n";
 }

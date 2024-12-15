@@ -78,23 +78,30 @@ void UDPCommand::logGame(std::string code, std::time_t now, std::time_t init) {
     }
 
     std::string line;
+    std::string firstLine;
+    if (std::getline(src, firstLine)) {
+        dst << firstLine << std::endl;
+    }
     while (std::getline(src, line)) {
         dst << line << std::endl;
     }
 
+    std::istringstream iss(firstLine);
+    std::vector<std::string> args;
+    std::string arg;
+    while (iss >> arg) { args.push_back(arg); }
+
     timestamp.str("");
     timestamp.clear();
-    timestamp << std::put_time(std::localtime(&now), "%d-%m-%Y %H:%M:%S");
-    dst << timestamp.str() + " " + std::to_string(now - init) << std::endl;
-    // if (code == "T") {
-    //     timestamp << std::put_time(std::localtime(&now), "%d-%m-%Y %H:%M:%S");
-    //     dst << timestamp.str() + " " + std::to_string(now - init) << std::endl;
-    // }
-    // else {
-    //     time_t timeout = init + now;
-    //     timestamp << std::put_time(std::localtime(&timeout), "%d-%m-%Y %H:%M:%S");
-    //     dst << timestamp.str() + " " + std::to_string(now + init) << std::endl;
-    // }
+    if (code == "T") {
+        time_t timeout = std::stoi(args[3]) + std::stoi(args[6]);
+        timestamp << std::put_time(std::localtime(&timeout), "%d-%m-%Y %H:%M:%S");
+        dst << timestamp.str() + " " + std::to_string(timeout) << std::endl;
+    }
+    else {
+        timestamp << std::put_time(std::localtime(&now), "%d-%m-%Y %H:%M:%S");
+        dst << timestamp.str() + " " + std::to_string(now - init) << std::endl;
+    }
 
     src.close();
     dst.close();
