@@ -30,7 +30,7 @@ std::string QuitExitCommand::exec(){
         return c == '-' || c == ':';
     }), date.end());
 
-    std::string newfileName = date + "_" + "X" + ".txt"; //o code não está bem, falta fazer
+    std::string newfileName = date + "_" + "Q" + ".txt";
 
     fs::path newfilePath = dirPath / fs::path(newfileName);
 

@@ -25,7 +25,7 @@
 
 #define START "SNG"
 #define TRY "TRY"
-#define SHOW_TRIALS "show_trials"
+#define SHOW_TRIALS "STR"
 #define SCOREBOARD "SSB"
 #define QUIT_EXIT "QUT"
 #define DEBUG "DBG"

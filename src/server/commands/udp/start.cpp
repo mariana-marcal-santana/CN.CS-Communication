@@ -22,7 +22,7 @@ std::string StartCommand::exec() {
 
     std::string playerInfo = this->findPlayerInfo(this->plid);
     
-    if (playerInfo == "")
+    if (playerInfo != "")
         return "RSG NOK\n";
 
     std::string key = generateColorKey();
