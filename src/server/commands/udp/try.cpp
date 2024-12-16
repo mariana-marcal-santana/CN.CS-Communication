@@ -14,8 +14,7 @@ std::string TryCommand::calcScore(int tries, int seconds) {
     return oss.str();
 }
 
-std::string TryCommand::evalLogTry(std::string solution, std::string time) {
-
+std::string TryCommand::evalTry(std::string solution) {
     std::string guess = this->C1 + this->C2 + this->C3 + this->C4;
     for (size_t i = 0; i < solution.length(); i++) {
         if (solution[i] == guess[i]) 
@@ -23,7 +22,12 @@ std::string TryCommand::evalLogTry(std::string solution, std::string time) {
         else if (solution.find(guess[i]) != std::string::npos)
             this->nW ++;
     }
-    std::string result = std::to_string(this->nB) + " " + std::to_string(this->nW);
+    return std::to_string(this->nB) + " " + std::to_string(this->nW);
+}
+
+std::string TryCommand::evalLogTry(std::string solution, std::string time) {
+
+    std::string result = evalTry(solution);
 
     // log try
     std::ofstream file((std::string)DB_GAMES_PATH + "/GAME_" + this->plid + ".txt", std::ofstream::app);
@@ -159,7 +163,8 @@ std::string TryCommand::exec() {
     std::vector<std::string> tries = this->getPlayerTries(this->plid);
 
     // too many tries
-    if (std::atoi(this->nT.c_str()) > MAX_TRIES) {
+    if (std::atoi(this->nT.c_str()) > MAX_TRIES ||
+        (std::atoi(this->nT.c_str()) == MAX_TRIES && evalTry(args[2]) != "4 0")) {
         this->logGame("F", now, std::stoi(args[6]));
         std::string result = "RTR ENT";
         for (size_t i = 0; i < args[2].length(); i++)

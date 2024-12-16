@@ -28,6 +28,7 @@ class TryCommand : public UDPCommand {
 
         bool check() override;
         std::string exec() override;
+        std::string evalTry(std::string solution);
         std::string evalLogTry(std::string solution, std::string time);
         std::string calcScore(int tries, int seconds);
         void logGame(std::string code, std::time_t now, std::time_t init);
