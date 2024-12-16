@@ -130,5 +130,5 @@ std::string ShowTrialsCommand::exec() {
 
     auto size = std::filesystem::file_size(trialsFileName);
 
-    return result + trialsFileName + " " + std::to_string(size) + " " + content.str();
+    return result + trialsFileName + " " + std::to_string(size) + " " + content.str() + "\n";
 }
