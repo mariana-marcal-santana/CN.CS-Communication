@@ -100,7 +100,7 @@ void TryCommand::logGame(std::string code, std::string colors, std::string mode,
 
     std::string score = calcScore(tries, now - init);
 
-    std::ofstream file((std::string)DB_SCORES_PATH + "/" + score + "_" + this->plid + timestamp.str() + ".txt");
+    std::ofstream file((std::string)DB_SCORES_PATH + "/" + score + "_" + this->plid + timestamp.str() + mode + ".txt");
     if (!file.is_open()) {
         std::perror("Unable to open file");
         exit(1);

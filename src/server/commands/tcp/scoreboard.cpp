@@ -77,5 +77,5 @@ std::string ScoreboardCommand::exec() {
         std::perror("Error deleting file");
     }
 
-    return "RSS OK scoreboard.txt " + std::to_string(size) + " " + content.str();
+    return "RSS OK " + scoreboardFileName + std::to_string(size) + " " + content.str();
 }
