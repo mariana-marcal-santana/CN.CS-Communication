@@ -126,8 +126,6 @@ std::string ShowTrialsCommand::exec() {
     std::stringstream content;
     content << r_trials.rdbuf();
 
-    printf("Content: %s\n", content.str().c_str());
-
     r_trials.close();
 
     auto size = std::filesystem::file_size(trialsFileName);
