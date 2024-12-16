@@ -5,7 +5,7 @@ int main (int argc, char *argv[]) {
     std::string serverPort = (argc > 1 && std::string(argv[1]) == PORT_FLAG) ? argv[2] : SERVER_PORT;
     bool verbose = (argc > 1 && (std::string(argv[1]) == VERBOSE_FLAG || std::string(argv[3]) == VERBOSE_FLAG));
     
-    int n, out_fds, newfd;
+    int n, ret, out_fds, newfd;
     char buffer[BUFFER_SIZE], prt_str[90], 
         host[NI_MAXHOST], service[NI_MAXSERV];
     socklen_t addrlen;
@@ -75,6 +75,10 @@ int main (int argc, char *argv[]) {
     FD_SET(tcp, &inputs);
     
     printf("Server is running\n");
+
+    // make sure the db directories exist
+    std::filesystem::create_directories((std::string)DB_GAMES_PATH);
+    std::filesystem::create_directories((std::string)DB_SCORES_PATH);
     
     while (1) {
         testfds = inputs;
@@ -93,8 +97,16 @@ int main (int argc, char *argv[]) {
             
             default:
                 if (FD_ISSET(0, &testfds)) {
-                    fgets(buffer, 50, stdin);
+                    scanf("%s", buffer);
                     printf("Input at keyboard: %s\n", buffer);
+                    if (strcmp(buffer, "exit\0") == 0) {
+                        printf("Exiting server...\n");
+                        freeaddrinfo(udp_res);
+                        freeaddrinfo(tcp_res);
+                        close(udp);
+                        close(tcp);
+                        exit(0);
+                    }
                 }
 
                 if (FD_ISSET(udp, &testfds)) {
@@ -143,8 +155,6 @@ int main (int argc, char *argv[]) {
                     }
                     else if (pid == 0) {
 
-                        printf("Child process\n");
-
                         std::string received_data;
 
                         char buf[2];
@@ -183,10 +193,10 @@ int main (int argc, char *argv[]) {
                         close(newfd);
                         exit(EXIT_SUCCESS);
                     }
-                    //do ret = close(newfd);
-                    // while (ret == ERROR && errno == EINTR);
-                    // if (ret == ERROR)
-                    //     exit(1);
+                    do ret = close(newfd);
+                    while (ret == ERROR && errno == EINTR);
+                    if (ret == ERROR)
+                        exit(1);
                 }
         }
     }

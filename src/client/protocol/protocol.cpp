@@ -1,13 +1,6 @@
 #include "protocol.hpp"
 
-Client::~Client() {
-    if (this->udp_sockfd >= 0) {
-        close(this->udp_sockfd);
-    }
-    if (this->tcp_sockfd >= 0) {
-        close(this->tcp_sockfd);
-    }
-}
+Client::~Client() {}
 
 int Client::setupConnection() {
 

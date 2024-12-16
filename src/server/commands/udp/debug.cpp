@@ -24,7 +24,7 @@ std::string DebugCommand::exec() {
     std::string playerInfo = this->findPlayerInfo(this->plid);
     
     // active game
-    if (playerInfo != "")
+    if (playerInfo != "" && getPlayerTries(this->plid).size() > 0)
         return "RDB NOK\n";
 
     std::ofstream file((std::string)DB_GAMES_PATH + "/GAME_" + this->plid + ".txt");

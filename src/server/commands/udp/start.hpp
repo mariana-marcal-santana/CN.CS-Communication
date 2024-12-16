@@ -2,27 +2,27 @@
 #define START_COMMAND_H
 
 #include "../command.hpp"
-#include <iostream>
-#include <string>
 #include <sstream>
 #include <vector>
-#include <algorithm>
-#include <cstdlib>
+#include <iostream>
+#include <chrono>
+#include <iomanip>
+#include <string>
+#include <random>
 #include <ctime>
 
 class StartCommand : public UDPCommand {
-    private:
-        std::string plid;
-        int max_playtime;
 
-        std::string generateColorKey();
+    private:
+        std::string max_playtime;
 
     public:
-        StartCommand(const std::string& plid, const std::string& timeStr)
-        : UDPCommand(START, START_RESP), plid(plid), max_playtime(std::stoi(timeStr)) {};
+        StartCommand(std::string plid, std::string max_playtime) 
+            : UDPCommand(START, START_RESP, plid), max_playtime(max_playtime) {};
 
         bool check() override;
         std::string exec() override;
+        std::string genColors();
 };
 
 #endif

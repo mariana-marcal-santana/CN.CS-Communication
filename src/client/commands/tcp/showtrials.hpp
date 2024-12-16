@@ -4,6 +4,7 @@
 #include "../command.hpp"
 #include <sstream>
 #include <vector>
+#include <fstream> 
 
 class ShowTrialsCommand : public TCPCommand {
     public:
