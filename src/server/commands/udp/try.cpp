@@ -163,8 +163,7 @@ std::string TryCommand::exec() {
     std::vector<std::string> tries = this->getPlayerTries(this->plid);
 
     // too many tries
-    if (std::atoi(this->nT.c_str()) > MAX_TRIES ||
-        (std::atoi(this->nT.c_str()) == MAX_TRIES && evalTry(args[2]) != "4 0")) {
+    if (std::atoi(this->nT.c_str()) > MAX_TRIES) {
         this->logGame("F", now, std::stoi(args[6]));
         std::string result = "RTR ENT";
         for (size_t i = 0; i < args[2].length(); i++)
@@ -186,7 +185,16 @@ std::string TryCommand::exec() {
 
     // valid try
     std::string evalLogTry = this->evalLogTry(args[2], std::to_string(now - std::stoi(args[6])));
-    if (evalLogTry == "4 0") {
+
+    if (std::atoi(this->nT.c_str()) == MAX_TRIES && strcmp(evalLogTry.c_str(), "4 0") != 0) {
+        this->logGame("F", now, std::stoi(args[6]));
+        std::string result = "RTR ENT";
+        for (size_t i = 0; i < args[2].length(); i++)
+            result = result + " " + args[i];
+        return result + "\n";
+    }
+
+    if (strcmp(evalLogTry.c_str(), "4 0") == 0) {
         this->logGame("W", args[2], args[1], tries.size() + 1, now, std::stoi(args[6]));
     }
     
