@@ -44,7 +44,13 @@ std::string ScoreboardCommand::exec() {
         return a.path().filename() > b.path().filename();
     });
 
-    std::string scoreboardFileName = (std::string)DB_PATH + "scoreboard.txt";
+    // generate scoreboard file name from the current date and time
+    time_t now = std::time(nullptr);
+    std::ostringstream timestamp;
+    timestamp << std::put_time(std::localtime(&now), "%m%d_%H%M");
+    std::string fileName = "scoreboard_" + timestamp.str() + ".txt";
+
+    std::string scoreboardFileName = (std::string)DB_PATH + fileName;
 
     std::ofstream w_scoreboard(scoreboardFileName.c_str());
     if (!w_scoreboard.is_open()) {
@@ -77,5 +83,5 @@ std::string ScoreboardCommand::exec() {
         std::perror("Error deleting file");
     }
 
-    return "RSS OK " + scoreboardFileName + " " + std::to_string(size) + " " + content.str();
+    return "RSS OK " + fileName + " " + std::to_string(size) + " " + content.str();
 }
