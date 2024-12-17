@@ -24,8 +24,22 @@ std::string DebugCommand::exec() {
     std::string playerInfo = this->findPlayerInfo(this->plid);
     
     // active game
-    if (playerInfo != "" && getPlayerTries(this->plid).size() > 0)
-        return "RDB NOK\n";
+    if (playerInfo != "") {
+        std::istringstream iss(playerInfo);
+        std::string arg;
+        std::vector<std::string> args;
+        while (iss >> arg) { args.push_back(arg); }
+
+        time_t now = std::time(nullptr);
+        // game hasn't timed out but has tries
+        if (now - std::stoi(args[6]) <= std::stoi(args[3])) {
+            if (getPlayerTries(this->plid).size() > 0)
+                return "RSG NOK\n";
+        }
+        else { // game timeout - log game and make new one
+            this->logGame("T", now, std::stoi(args[6]));
+        }
+    }
 
     std::ofstream file((std::string)DB_GAMES_PATH + "/GAME_" + this->plid + ".txt");
     if (!file.is_open()) {
