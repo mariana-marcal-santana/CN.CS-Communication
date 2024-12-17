@@ -61,7 +61,7 @@ std::vector<std::string> Command::getPlayerTries(std::string plid) {
     return tries;
 }
 
-void UDPCommand::logGame(std::string code, std::time_t now, std::time_t init) {
+void Command::logGame(std::string code, std::time_t now, std::time_t init) {
 
     std::ostringstream timestamp;
     timestamp << std::put_time(std::localtime(&now), "%Y%m%d_%H%M%S_");

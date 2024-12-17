@@ -37,13 +37,15 @@ void ShowTrialsCommand::receive() {
             exit(1);
         }
         buf[1] = '\0';
-        if (strcmp(buf, " ") == 0) {
+        if (strcmp(buf, " ") == 0 || strcmp(buf, "\n") == 0) {
             break;
         }
         status.append(buf, 1);
     }
 
-    if (status == NOK) {
+    printf("status:|%s|", status.c_str());
+
+    if (strcmp(status.c_str(), NOK) == 0) {
         this->data = std::string(cmd) + " " + std::string(status);
         return;
     }
@@ -111,7 +113,7 @@ void ShowTrialsCommand::handleReceive() { // RST status [Fname Fsize Fdata]
         args.push_back(arg);
     }
     
-    if (args.size() != 4) {
+    if (args.size() != 4 && args.size() != 2) {
         std::cout << UNPARSEABLE_MSG_SERVER << std::endl;
         return;
     }

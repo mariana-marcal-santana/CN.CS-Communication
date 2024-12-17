@@ -27,11 +27,12 @@ class Command
         int networkType;
         std::string command;
         std::string cmd_response;
+        std::string plid;
         
     public:
 
-        Command(int networkType, std::string command, std::string cmd_response) 
-            : networkType(networkType), command(command), cmd_response(cmd_response) {}
+        Command(int networkType, std::string command, std::string cmd_response, std::string plid) 
+            : networkType(networkType), command(command), cmd_response(cmd_response), plid(plid) {}
 
         virtual ~Command() = default;
 
@@ -41,29 +42,26 @@ class Command
         virtual std::string exec() = 0;
         std::string findPlayerInfo(std::string plid);
         std::vector<std::string> getPlayerTries(std::string plid);
+        void logGame(std::string code, std::time_t now, std::time_t init);
         int createPlayerFile(std::string plid, char mode, std::string key, int time);
 };
 
 class UDPCommand : public Command
 {
-    protected:
-        std::string plid;
-
     public:
         UDPCommand(std::string command, std::string cmd_response, std::string plid) 
-            : Command(UDP, command, cmd_response), plid(plid) {}
+            : Command(UDP, command, cmd_response, plid) {}
 
     std::string execute() override;
     virtual bool check() = 0;
     virtual std::string exec() = 0; 
-    void logGame(std::string code, std::time_t now, std::time_t init);
 };
 
 class TCPCommand : public Command
 {
     public:
-        TCPCommand(std::string command, std::string cmd_response) 
-            : Command(TCP, command, cmd_response) {}
+        TCPCommand(std::string command, std::string cmd_response, std::string plid) 
+            : Command(TCP, command, cmd_response, plid) {}
 
     std::string execute() override;
     virtual bool check() = 0;

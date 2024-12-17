@@ -16,11 +16,24 @@ std::string ShowTrialsCommand::exec() {
 
     std::string playerInfo = this->findPlayerInfo(this->plid);
     if (playerInfo != "") {
-        fileName = (std::string)DB_GAMES_PATH + "/GAME_" + this->plid + ".txt";
-        result = "RST ACT ";
-        currentGame = true;
+
+        std::istringstream iss(playerInfo);
+        std::string arg;
+        std::vector<std::string> args;
+        while (iss >> arg) { args.push_back(arg); }
+
+        // game timeout
+        std::time_t now = std::time(nullptr);
+        if (now - std::stoi(args[6]) > std::stoi(args[3])) {
+            this->logGame("T", now, std::stoi(args[6]));
+        }
+        else {
+            fileName = (std::string)DB_GAMES_PATH + "/GAME_" + this->plid + ".txt";
+            result = "RST ACT ";
+            currentGame = true;
+        }
     }
-    else {
+    if (!currentGame) {
         std::string dirPath = (std::string)DB_GAMES_PATH + "/" + this->plid;
         if (std::filesystem::exists(dirPath) && std::filesystem::is_directory(dirPath)) {
             
@@ -109,10 +122,10 @@ std::string ShowTrialsCommand::exec() {
         }
         file.close();
         std::istringstream iss(lastLine);
-        std::vector<std::string> args;
+        std::vector<std::string> args_l;
         std::string arg;
-        while (iss >> arg) { args.push_back(arg); }
-        trials << std::endl << "  -- Game completed at " + args[0] + " " + args[1] + ", Duration: " + args[2] + "s" << std::endl;
+        while (iss >> arg) { args_l.push_back(arg); }
+        trials << std::endl << "  -- Game finished at " + args_l[0] + " " + args_l[1] + ", Duration: " + std::to_string(std::stoi(args_l[2]) - std::stoi(args[6])) + "s" << std::endl;
     }
 
     trials.close();
