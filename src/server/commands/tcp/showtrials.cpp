@@ -83,7 +83,6 @@ std::string ShowTrialsCommand::exec() {
     if (!currentGame) {
         trials << "Mode : " << ((args[1] == "P") ? "PLAY" : "DEBUG");
         trials << "  Secret code: " + args[2] << std::endl;
-        std::string secretKey = args[1] + " " + args[2] + " " + args[3] + " " + args[6];
     }
 
     std::vector<std::string> tries;
@@ -125,7 +124,7 @@ std::string ShowTrialsCommand::exec() {
         std::vector<std::string> args_l;
         std::string arg;
         while (iss >> arg) { args_l.push_back(arg); }
-        trials << std::endl << "  -- Game finished at " + args_l[0] + " " + args_l[1] + ", Duration: " + std::to_string(std::stoi(args_l[2]) - std::stoi(args[6])) + "s" << std::endl;
+        trials << std::endl << "  -- Game finished at " + args_l[0] + " " + args_l[1] + ", Duration: " + std::to_string(std::stoi(args_l[2])) + "s" << std::endl;
     }
 
     trials.close();

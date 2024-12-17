@@ -79,7 +79,7 @@ void TryCommand::logGame(std::string code, std::time_t now, std::time_t init) {
         while (iss >> arg) { args.push_back(arg); }
         time_t timeout = std::stoi(args[3]) + std::stoi(args[6]);
         timestamp << std::put_time(std::localtime(&timeout), "%d-%m-%Y %H:%M:%S");
-        dst << timestamp.str() + " " + std::to_string(timeout) << std::endl;
+        dst << timestamp.str() + " " + std::to_string(timeout - init) << std::endl;
     }
     else {
         timestamp << std::put_time(std::localtime(&now), "%d-%m-%Y %H:%M:%S");

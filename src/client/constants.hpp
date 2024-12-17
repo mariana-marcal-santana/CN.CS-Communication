@@ -27,6 +27,7 @@
 #define RST "RST"
 #define RQT "RQT"
 #define RSG "RSG"
+#define RTR "RTR"
 
 #define OK "OK"
 #define NOK "NOK"
