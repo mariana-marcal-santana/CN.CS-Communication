@@ -112,6 +112,11 @@ void ShowTrialsCommand::handleReceive() { // RST status [Fname Fsize Fdata]
     while (iss >> arg) {
         args.push_back(arg);
     }
+
+    if (args.size() == 1 && args[0] == ERR) {
+        std::cout << INVALID_COMMAND_MSG << std::endl;
+        return;
+    }
     
     if (args.size() != 4 && args.size() != 2) {
         std::cout << UNPARSEABLE_MSG_SERVER << std::endl;
@@ -127,6 +132,8 @@ void ShowTrialsCommand::handleReceive() { // RST status [Fname Fsize Fdata]
         std::cout << "There're no games for this player." << std::endl;
         return;
     }
+
+    this->client->playing = args[1] == ACT ? true : false;
 
     printf("Trials:\n");
 
@@ -145,3 +152,11 @@ void ShowTrialsCommand::handleReceive() { // RST status [Fname Fsize Fdata]
 std::string ShowTrialsCommand::formatData() {
     return "STR " + this->client->plid + "\n";
 }   
+
+bool ShowTrialsCommand::shouldSend() {
+    bool res = this->client->plid != "";
+    if (!res) {
+        std::cout << "You must set a plid." << std::endl;
+    }
+    return this->client->plid != "";
+}

@@ -5,7 +5,7 @@
 #define PORT_FLAG "-p"
 #define SERVER_IP "localhost"
 #define SERVER_PORT "58052"
-#define CONNECTION_TIMEOUT 600
+#define CONNECTION_TIMEOUT 10
 #define MAX_FILE_SIZE 1024
 #define MAX_TCP_REPLY_SIZE 3 + 3 + 24 + 4 + MAX_FILE_SIZE + 1 + 5 // RSS + status + fname + fsize + fdata + <spaces>
 #define MAX_TRIES 8

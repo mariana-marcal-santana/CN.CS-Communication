@@ -11,6 +11,7 @@ class ExitCommand : public UDPCommand {
         ExitCommand() 
             : UDPCommand(EXIT) {};
 
+        bool shouldSend() override;
         void handleReceive() override;
         std::string formatData() override;
 };

@@ -1,4 +1,4 @@
-player.o
-server.o
+player
+GS
 *.txt
 *.html

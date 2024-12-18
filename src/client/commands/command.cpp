@@ -3,6 +3,7 @@
 void UDPCommand::send() {
     std::string dataToSend = this->formatData();
     printf("Sending data: %s", dataToSend.c_str());
+
     if (sendto(this->client->udp_sockfd, dataToSend.c_str(), dataToSend.length(), 0,
         this->client->udp_res->ai_addr, this->client->udp_res->ai_addrlen) < 0) { 
         perror("Error sending data");
@@ -11,10 +12,12 @@ void UDPCommand::send() {
 }
 
 int UDPCommand::execute() {
-    this->send();
-    this->receive();
-    printf("Received data: %s\n", this->data.c_str());
-    this->handleReceive();
+    if (this-> shouldSend()) {
+        this->send();
+        this->receive();
+        printf("Received data: %s\n", this->data.c_str());
+        this->handleReceive();
+    } 
     return this->command == EXIT ? 1 : 0;
 }
 
@@ -58,30 +61,32 @@ void TCPCommand::send() {
 
 int TCPCommand::execute() {
 
-    this->client->tcp_sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (this->client->tcp_sockfd == ERROR) {
-        perror("Error creating socket");
-        exit(1);
-    }
+    if (this->shouldSend()) {
+        this->client->tcp_sockfd = socket(AF_INET, SOCK_STREAM, 0);
+        if (this->client->tcp_sockfd == ERROR) {
+            perror("Error creating socket");
+            exit(1);
+        }
 
-    memset(&this->client->tcp_hints, 0, sizeof(this->client->tcp_hints));
-    this->client->tcp_hints.ai_family = AF_INET;
-    this->client->tcp_hints.ai_socktype = SOCK_STREAM;
+        memset(&this->client->tcp_hints, 0, sizeof(this->client->tcp_hints));
+        this->client->tcp_hints.ai_family = AF_INET;
+        this->client->tcp_hints.ai_socktype = SOCK_STREAM;
 
-    if (getaddrinfo(this->client->serverIP.c_str(), this->client->serverPort.c_str(), &this->client->tcp_hints, &this->client->tcp_res) != 0) {
-        perror("Error getting address info");
-        exit(1);
-    }
+        if (getaddrinfo(this->client->serverIP.c_str(), this->client->serverPort.c_str(), &this->client->tcp_hints, &this->client->tcp_res) != 0) {
+            perror("Error getting address info");
+            exit(1);
+        }
 
-    if (connect(this->client->tcp_sockfd, this->client->tcp_res->ai_addr, this->client->tcp_res->ai_addrlen) == ERROR) {
-        perror("Error connecting to server");
-        exit(1);
+        if (connect(this->client->tcp_sockfd, this->client->tcp_res->ai_addr, this->client->tcp_res->ai_addrlen) == ERROR) {
+            perror("Error connecting to server");
+            exit(1);
+        }
+        this->send();
+        this->receive();
+        freeaddrinfo(client->tcp_res);
+        close(client->tcp_sockfd);
+        this->handleReceive();
     }
-    this->send();
-    this->receive();
-    freeaddrinfo(client->tcp_res);
-    close(client->tcp_sockfd);
-    this->handleReceive();
     return 0;
 }
 

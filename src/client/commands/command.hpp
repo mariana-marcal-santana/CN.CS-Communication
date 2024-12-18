@@ -24,9 +24,11 @@ class Command
 
         virtual ~Command() = default;
 
+        
         virtual void send() = 0;
         virtual int execute() = 0;
         virtual void receive() = 0;
+        virtual bool shouldSend() = 0;
         virtual void handleReceive() = 0;
         virtual std::string formatData() = 0;
 };
@@ -40,6 +42,7 @@ class UDPCommand : public Command
     void send() override;
     int execute() override;
     void receive() override;
+    virtual bool shouldSend() = 0;
     virtual void handleReceive() = 0;
     virtual std::string formatData() = 0;
 };
@@ -53,6 +56,7 @@ class TCPCommand : public Command
     void send() override;
     int execute() override;
     virtual void receive() = 0;
+    virtual bool shouldSend() = 0;
     virtual void handleReceive() = 0;
     virtual std::string formatData() = 0;
 };

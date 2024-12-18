@@ -7,8 +7,8 @@ SERVER_DIR = src/server
 CLIENT_SOURCES = $(shell find $(CLIENT_DIR) -name '*.cpp')
 SERVER_SOURCES = $(shell find $(SERVER_DIR) -name '*.cpp')
 
-CLIENT_EXEC = ./player.o
-SERVER_EXEC = ./server.o
+CLIENT_EXEC = ./player
+SERVER_EXEC = ./GS
 
 all: clean $(CLIENT_EXEC) $(SERVER_EXEC)
 

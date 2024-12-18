@@ -77,6 +77,7 @@ int main (int argc, char *argv[]) {
     printf("Server is running\n");
 
     // make sure the db directories exist
+    std::filesystem::create_directories((std::string)DB_PATH);
     std::filesystem::create_directories((std::string)DB_GAMES_PATH);
     std::filesystem::create_directories((std::string)DB_SCORES_PATH);
     
@@ -159,7 +160,7 @@ int main (int argc, char *argv[]) {
 
                         char buf[2];
                         memset(buf, '\0', sizeof(buf));
-                        while ((n = read(newfd, buffer, 1)) > 0) {
+                        while ((n = read(newfd, buffer, 1))) {
                             if (n == ERROR) {
                                 perror("Error reading from client");
                                 exit(1);
@@ -184,6 +185,18 @@ int main (int argc, char *argv[]) {
                         }
 
                         printf("Response: %s\n", response.c_str());
+
+                        ssize_t size = response.size();
+                        const char *buffer = response.c_str();
+
+                        while (size > 0) {
+                            if ((nw = write(newfd, buffer, 1)) == ERROR) {
+                                perror("Error writing to client");
+                                exit(1);
+                            }
+                            buffer += nw;
+                            size -= nw;
+                        }
 
                         if ((nw = write(newfd, response.c_str(), response.size())) == ERROR) {
                             perror("Error writing to client");

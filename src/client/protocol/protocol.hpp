@@ -17,10 +17,11 @@
 class Client {
     public:
         Client(std::string plid, std::string serverIP, std::string serverPort)
-            : plid(plid), tries(1), serverIP(serverIP), serverPort(serverPort) {};
+            : plid(plid), tries(1), playing(false), serverIP(serverIP), serverPort(serverPort) {};
         
         std::string plid;
         int tries;
+        bool playing;
         std::string serverIP;
         std::string serverPort;
         int setupConnection();

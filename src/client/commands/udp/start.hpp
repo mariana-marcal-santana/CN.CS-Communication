@@ -16,6 +16,7 @@ class StartCommand : public UDPCommand {
         StartCommand(std::string plid, std::string max_playtime) 
             : UDPCommand(START), plid(plid), max_playtime(max_playtime) {};
 
+        bool shouldSend() override;
         void handleReceive() override;
         std::string formatData() override;
 };

@@ -38,7 +38,7 @@ void ScoreboardCommand::receive() {
             exit(1);
         }
         buf[1] = '\0';
-        if (strcmp(buf, " ") == 0) {
+        if (strcmp(buf, " ") == 0 || strcmp(buf, "\n") == 0) {
             break;
         }
         status.append(buf, 1);
@@ -79,7 +79,16 @@ void ScoreboardCommand::receive() {
 
     char buffer[BUFFER_SIZE];
     std::string fdata = "";
-    int size = std::stoi(fsize);
+    int size;
+    try {
+        size = std::stoi(fsize);
+    } catch (const std::invalid_argument& e) {
+        std::cerr << UNPARSEABLE_MSG_SERVER << std::endl;
+        return;
+    } catch (const std::out_of_range& e) {
+        std::cerr << UNPARSEABLE_MSG_SERVER << std::endl;
+        return;
+    }
 
     while (size > 0) {
         if ((n = read(this->client->tcp_sockfd, buffer, (size < BUFFER_SIZE) ? size : BUFFER_SIZE)) == ERROR) {
@@ -111,8 +120,13 @@ void ScoreboardCommand::handleReceive() {
     while (iss >> arg) {
         args.push_back(arg);
     }
+
+    if (args.size() == 1 && args[0] == ERR) {
+        std::cout << INVALID_COMMAND_MSG << std::endl;
+        return;
+    }
     
-    if (args.size() != 4) {
+    if (args.size() != 2 && args.size() != 4) {
         std::cout << UNPARSEABLE_MSG_SERVER << std::endl;
         return;
     }
@@ -126,7 +140,7 @@ void ScoreboardCommand::handleReceive() {
         std::cout << "No game has been won yet." << std::endl;
         return;
     }
-
+    
     printf("Scoreboard:\n");
 
     std::ifstream scoreboard(args[2]);
@@ -144,3 +158,7 @@ void ScoreboardCommand::handleReceive() {
 std::string ScoreboardCommand::formatData() {
     return "SSB\n";
 }   
+
+bool ScoreboardCommand::shouldSend() {
+    return true;
+}

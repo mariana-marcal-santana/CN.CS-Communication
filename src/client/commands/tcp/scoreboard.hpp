@@ -11,6 +11,7 @@ class ScoreboardCommand : public TCPCommand {
         ScoreboardCommand() 
             : TCPCommand(SCOREBOARD) {};
 
+        bool shouldSend() override;
         void receive() override;
         void handleReceive() override;
         std::string formatData() override;

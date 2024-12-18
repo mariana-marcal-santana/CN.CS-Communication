@@ -11,6 +11,7 @@ class ShowTrialsCommand : public TCPCommand {
         ShowTrialsCommand() 
             : TCPCommand(SHOW_TRIALS) {};
 
+        bool shouldSend() override;
         void receive() override;
         void handleReceive() override;
         std::string formatData() override;
