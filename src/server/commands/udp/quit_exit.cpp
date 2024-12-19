@@ -35,7 +35,9 @@ std::string QuitExitCommand::exec() {
     
     std::string result = "RQT OK";
     for (size_t i = 0; i < args[2].length(); i++) {
-        result += " " + args[2].substr(i, 1);
+        printf("args[2][i]: %c\n", args[2][i]);
+        result = result + " " + args[2][i];
+        printf("result: %s\n", result.c_str());
     }
 
     return result + "\n";
