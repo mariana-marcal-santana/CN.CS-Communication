@@ -71,6 +71,8 @@ int main (int argc, char *argv[]) {
 
     FD_ZERO(&inputs);
     FD_SET(0, &inputs);
+    FD_SET(udp, &inputs);
+    FD_SET(tcp, &inputs);
     
     // init db
     std::filesystem::create_directories((std::string)DB_PATH);
@@ -78,8 +80,7 @@ int main (int argc, char *argv[]) {
     std::filesystem::create_directories((std::string)DB_SCORES_PATH);
     
     while (1) {
-        FD_SET(udp, &inputs);
-        FD_SET(tcp, &inputs);
+        
         testfds = inputs;
 
         memset((void *)&timeout,0,sizeof(timeout));
@@ -139,7 +140,7 @@ int main (int argc, char *argv[]) {
                         perror("Sendto error");
                         exit(1);
                     }
-                    FD_CLR(udp, &inputs);
+                    //FD_CLR(udp, &inputs);
                 }
 
                 if (FD_ISSET(tcp, &testfds)) {
@@ -217,7 +218,7 @@ int main (int argc, char *argv[]) {
                     while (ret == ERROR && errno == EINTR);
                     if (ret == ERROR)
                         exit(1);
-                    FD_CLR(tcp, &inputs);
+                    //FD_CLR(tcp, &inputs);
                 }
         }
     }
