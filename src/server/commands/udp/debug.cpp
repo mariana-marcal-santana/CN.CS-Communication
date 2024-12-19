@@ -34,7 +34,7 @@ std::string DebugCommand::exec() {
         // game hasn't timed out but has tries
         if (now - std::stoi(args[6]) <= std::stoi(args[3])) {
             if (getPlayerTries(this->plid).size() > 0)
-                return "RSG NOK\n";
+                return "RDB NOK\n";
         }
         else { // game timeout - log game and make new one
             this->logGame("T", now, std::stoi(args[6]));
