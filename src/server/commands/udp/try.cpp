@@ -167,7 +167,7 @@ std::string TryCommand::exec() {
         this->logGame("F", now, std::stoi(args[6]));
         std::string result = "RTR ENT";
         for (size_t i = 0; i < args[2].length(); i++)
-            result = result + " " + args[i];
+            result = result + " " + args[2][i];
         return result + "\n";
     }
 
@@ -190,7 +190,7 @@ std::string TryCommand::exec() {
         this->logGame("F", now, std::stoi(args[6]));
         std::string result = "RTR ENT";
         for (size_t i = 0; i < args[2].length(); i++)
-            result = result + " " + args[i];
+            result = result + " " + args[2][i];
         return result + "\n";
     }
 
