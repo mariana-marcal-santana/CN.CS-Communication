@@ -135,17 +135,30 @@ std::string TryCommand::exec() {
         return result + "\n";
     }
 
-    // duplicate try
-    for (std::string t : tries) {
-        if (t == this->C1 + this->C2 + this->C3 + this->C4) {
-            return "RTR DUP\n";
+    // duplicate or inavlid try
+    int nT_expected = static_cast<int>(tries.size() + 1);
+    std::string currentTry = this->C1 + this->C2 + this->C3 + this->C4;
+
+    if (std::stoi(this->nT) == nT_expected - 1) {
+        if (currentTry != tries.back()) {
+            return "RTR INV\n";
+        }
+    }
+    else if (std::stoi(this->nT) != nT_expected - 1 && std::stoi(this->nT) != nT_expected) {
+        return "RTR INV\n";
+    }
+    else if (std::stoi(this->nT) == nT_expected) {
+        for (std::string t : tries) {
+            if (t == currentTry) {
+                return "RTR DUP\n";
+            }
         }
     }
 
     // invalid try number
-    if (std::stoi(this->nT) != static_cast<int>(tries.size() + 1)) {
-        return "RTR INV\n";
-    }
+    // if (std::stoi(this->nT) != static_cast<int>(tries.size() + 1)) {
+    //     return "RTR INV\n";
+    // }
 
     // valid try
     std::string evalLogTry = this->evalLogTry(args[2], std::to_string(now - std::stoi(args[6])));
