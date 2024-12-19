@@ -71,7 +71,7 @@ int main (int argc, char *argv[]) {
 
     FD_ZERO(&inputs);
     FD_SET(0, &inputs);
-    FD_SET(udp, &inputs);
+    //FD_SET(udp, &inputs);
     FD_SET(tcp, &inputs);
     
     // make sure the db directories exist
@@ -80,6 +80,7 @@ int main (int argc, char *argv[]) {
     std::filesystem::create_directories((std::string)DB_SCORES_PATH);
     
     while (1) {
+        FD_SET(udp, &inputs);
         testfds = inputs;
 
         memset((void *)&timeout,0,sizeof(timeout));
@@ -139,6 +140,7 @@ int main (int argc, char *argv[]) {
                         perror("Sendto error");
                         exit(1);
                     }
+                    FD_CLR(udp, &inputs);
                 }
 
                 if (FD_ISSET(tcp, &testfds)) {
