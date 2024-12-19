@@ -2,7 +2,6 @@
 #define TRY_COMMAND_H
 
 #include "../command.hpp"
-#include "../../common.hpp"
 #include <iostream>
 #include <sstream>
 #include <vector>

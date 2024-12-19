@@ -74,8 +74,6 @@ int main (int argc, char *argv[]) {
     FD_SET(udp, &inputs);
     FD_SET(tcp, &inputs);
     
-    printf("Server is running\n");
-
     // make sure the db directories exist
     std::filesystem::create_directories((std::string)DB_PATH);
     std::filesystem::create_directories((std::string)DB_GAMES_PATH);
@@ -99,9 +97,7 @@ int main (int argc, char *argv[]) {
             default:
                 if (FD_ISSET(0, &testfds)) {
                     scanf("%s", buffer);
-                    printf("Input at keyboard: %s\n", buffer);
                     if (strcmp(buffer, "exit\0") == 0) {
-                        printf("Exiting server...\n");
                         freeaddrinfo(udp_res);
                         freeaddrinfo(tcp_res);
                         close(udp);
@@ -130,6 +126,13 @@ int main (int argc, char *argv[]) {
                     std::string response = command != nullptr ? command->execute() : ERR;
                     if (command != nullptr) {
                         delete command;
+                    }
+
+                    if (verbose) {
+                        if (getnameinfo((struct sockaddr *) &udp_useraddr, addrlen, host, sizeof host, service, sizeof service, 0) == 0) {
+                            printf("UDP response sent to [%s:%s]: %s", host, service, response.c_str());
+                            fflush(stdout);
+                        }
                     }
                     
                     if (sendto(udp, response.c_str(), response.size(), 0, (struct sockaddr*)&udp_useraddr, addrlen) == ERROR) {
@@ -184,7 +187,12 @@ int main (int argc, char *argv[]) {
                             delete command;
                         }
 
-                        printf("Response: %s\n", response.c_str());
+                        if (verbose) {
+                            if (getnameinfo((struct sockaddr *) &tcp_useraddr, addrlen, host, sizeof host, service, sizeof service, 0) == 0) {
+                                printf("TCP response sent to [%s:%s]: %s", host, service, response.c_str());
+                                fflush(stdout);
+                            }
+                        }
 
                         ssize_t size = response.size();
                         const char *buffer = response.c_str();

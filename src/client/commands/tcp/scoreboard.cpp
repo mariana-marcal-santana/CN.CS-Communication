@@ -149,6 +149,8 @@ void ScoreboardCommand::handleReceive() {
         exit(1);
     }
 
+    std::cout << "File stored in current directory - file name " + args[2] + " file size " + args[3] << std::endl;
+
     std::string line;
     while (std::getline(scoreboard, line)) {
         std::cout << line << std::endl;

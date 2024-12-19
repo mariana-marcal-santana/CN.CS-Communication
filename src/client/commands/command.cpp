@@ -37,10 +37,11 @@ void UDPCommand::receive() {
     int n = recvfrom(this->client->udp_sockfd, buffer, 128, 0, (struct sockaddr*)&this->client->addr, &len);
 
     if (n < 0) {
-        perror("Error receiving data");
-        if(tv.tv_sec == CONNECTION_TIMEOUT) {
+        if (tv.tv_sec == CONNECTION_TIMEOUT) {
             perror("Connection timeout");
+            return;
         }
+        perror("Error receiving data");
         exit(1);
     }
 

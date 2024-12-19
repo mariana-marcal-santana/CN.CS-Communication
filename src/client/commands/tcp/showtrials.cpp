@@ -80,7 +80,16 @@ void ShowTrialsCommand::receive() {
 
     char buffer[BUFFER_SIZE];
     std::string fdata = "";
-    int size = std::stoi(fsize);
+    int size;
+    try {
+        size = std::stoi(fsize);
+    } catch (const std::invalid_argument& e) {
+        std::cerr << UNPARSEABLE_MSG_SERVER << std::endl;
+        return;
+    } catch (const std::out_of_range& e) {
+        std::cerr << UNPARSEABLE_MSG_SERVER << std::endl;
+        return;
+    }
 
     while (size > 0) {
         if ((n = read(this->client->tcp_sockfd, buffer, (size < BUFFER_SIZE) ? size : BUFFER_SIZE)) == ERROR) {
@@ -143,10 +152,13 @@ void ShowTrialsCommand::handleReceive() { // RST status [Fname Fsize Fdata]
         exit(1);
     }
 
+    std::cout << "File stored in current directory - file name " + args[2] + " file size " + args[3] << std::endl;
+
     std::string line;
     while (std::getline(trials, line)) {
         std::cout << line << std::endl;
     }    
+    trials.close();
 }
 
 std::string ShowTrialsCommand::formatData() {
@@ -158,5 +170,5 @@ bool ShowTrialsCommand::shouldSend() {
     if (!res) {
         std::cout << "You must set a plid." << std::endl;
     }
-    return this->client->plid != "";
+    return res;
 }
