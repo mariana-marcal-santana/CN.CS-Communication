@@ -144,8 +144,8 @@ int main (int argc, char *argv[]) {
                 if (FD_ISSET(tcp, &testfds)) {
 
                     addrlen = sizeof(tcp_useraddr);
-                    do newfd = accept(tcp, (struct sockaddr *) &tcp_useraddr, &addrlen);
-                    while (newfd == -1 && errno == EINTR);
+                    newfd = accept(tcp, (struct sockaddr *) &tcp_useraddr, &addrlen);
+                    //while (newfd == -1 && errno == EINTR);
 
                     if (newfd == -1) {
                         perror("Accept error");
