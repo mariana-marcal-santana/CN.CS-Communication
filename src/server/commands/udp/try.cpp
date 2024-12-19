@@ -84,7 +84,9 @@ bool TryCommand::check() {
 
 std::string TryCommand::exec() {
 
-    std::ifstream file((std::string)DB_GAMES_PATH + "/GAME_" + plid + ".txt");
+    std::fstream file;
+    std::string fileName = (std::string)DB_GAMES_PATH + "/GAME_" + plid + ".txt";
+    file.open(fileName, std::ios::in | std::ios::out | std::ios::app);
     if (!file.is_open()) {
         return "RTR NOK\n";
     }
@@ -124,8 +126,6 @@ std::string TryCommand::exec() {
         }
     }
     
-    file.close();
-
     // too many tries
     if (std::atoi(this->nT.c_str()) > MAX_TRIES) {
         this->logGameG("F", now, std::stoi(args[6]));
@@ -136,7 +136,10 @@ std::string TryCommand::exec() {
     }
 
     // duplicate or inavlid try
+    printf("nT: %d\n", std::stoi(this->nT));
+
     int nT_expected = static_cast<int>(tries.size() + 1);
+    printf("nT_expected: %d\n", nT_expected);
     std::string currentTry = this->C1 + this->C2 + this->C3 + this->C4;
 
     if (std::stoi(this->nT) == nT_expected - 1) {
@@ -155,15 +158,18 @@ std::string TryCommand::exec() {
         }
     }
 
-    // invalid try number
-    // if (std::stoi(this->nT) != static_cast<int>(tries.size() + 1)) {
-    //     return "RTR INV\n";
-    // }
-
     // valid try
-    std::string evalLogTry = this->evalLogTry(args[2], std::to_string(now - std::stoi(args[6])));
+    file.clear();
+    file.seekp(0, std::ios::end);
+    
+    std::string evalTry = this->evalTry(args[2]);
+    std::string write = "T: " + this->C1 + this->C2  + this->C3 + this->C4 + " " + evalTry + " " + std::to_string(now - std::stoi(args[6]));
+    printf("write: %s\n", write.c_str());
+    file << write << std::endl;
+    //std::string evalLogTry = this->evalLogTry(args[2], std::to_string(now - std::stoi(args[6])));
+    file.close();
 
-    if (std::atoi(this->nT.c_str()) == MAX_TRIES && strcmp(evalLogTry.c_str(), "4 0") != 0) {
+    if (std::atoi(this->nT.c_str()) == MAX_TRIES && strcmp(evalTry.c_str(), "4 0") != 0) {
         this->logGameG("F", now, std::stoi(args[6]));
         std::string result = "RTR ENT";
         for (size_t i = 0; i < args[2].length(); i++)
@@ -171,9 +177,9 @@ std::string TryCommand::exec() {
         return result + "\n";
     }
 
-    if (strcmp(evalLogTry.c_str(), "4 0") == 0) {
+    if (strcmp(evalTry.c_str(), "4 0") == 0) {
         this->logGame("W", args[2], args[1], tries.size() + 1, now, std::stoi(args[6]));
     }
     
-    return "RTR OK " + std::to_string(tries.size() + 1) + " " + evalLogTry + "\n";
+    return "RTR OK " + std::to_string(tries.size() + 1) + " " + evalTry + "\n";
 }
