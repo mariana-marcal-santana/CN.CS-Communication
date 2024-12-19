@@ -3,12 +3,13 @@
 std::string StartCommand::genColors() {
     std::vector<std::string> colors = {"R", "G", "B", "Y", "O", "P"};
     
-    std::mt19937 rng(static_cast<unsigned>(std::time(nullptr)));
-    std::uniform_int_distribution<size_t> dist(0, colors.size() - 1);
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<int> dist(0, 5);
 
     std::string result;
     for (size_t i = 0; i < 4; ++i) {
-        result += colors[dist(rng)];
+        result += colors[dist(gen)];
     }
 
     return result;
