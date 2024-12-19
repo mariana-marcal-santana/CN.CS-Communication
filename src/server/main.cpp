@@ -72,7 +72,7 @@ int main (int argc, char *argv[]) {
     FD_ZERO(&inputs);
     FD_SET(0, &inputs);
     //FD_SET(udp, &inputs);
-    FD_SET(tcp, &inputs);
+    // FD_SET(tcp, &inputs);
     
     // make sure the db directories exist
     std::filesystem::create_directories((std::string)DB_PATH);
@@ -81,6 +81,7 @@ int main (int argc, char *argv[]) {
     
     while (1) {
         FD_SET(udp, &inputs);
+        FD_SET(tcp, &inputs);
         testfds = inputs;
 
         memset((void *)&timeout,0,sizeof(timeout));
@@ -220,6 +221,7 @@ int main (int argc, char *argv[]) {
                     while (ret == ERROR && errno == EINTR);
                     if (ret == ERROR)
                         exit(1);
+                    FD_CLR(tcp, &inputs);
                 }
         }
     }
