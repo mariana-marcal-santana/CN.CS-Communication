@@ -134,8 +134,6 @@ bool TryCommand::check() {
 
 std::string TryCommand::exec() {
 
-    // playerInfo: plid mode colors time date hour timestamp
-    //std::string playerInfo = this->findPlayerInfo(this->plid);
     std::ifstream file((std::string)DB_GAMES_PATH + "/GAME_" + plid + ".txt");
     if (!file.is_open()) {
         return "RTR NOK\n";
@@ -143,11 +141,6 @@ std::string TryCommand::exec() {
 
     std::string playerInfo;
     std::getline(file, playerInfo);
-    
-    // no active game
-    // if (playerInfo == "") {
-    //     return "RTR NOK\n";
-    // }
 
     std::istringstream iss(playerInfo);
     std::string arg;
@@ -167,7 +160,6 @@ std::string TryCommand::exec() {
         return result + "\n";
     }
 
-    //std::vector<std::string> tries = this->getPlayerTries(this->plid);
     std::vector<std::string> tries;
     std::string line;
     while (std::getline(file, line)) {
@@ -179,12 +171,10 @@ std::string TryCommand::exec() {
                 args.push_back(arg);
             }
             tries.push_back(args[1]);
-            printf("Try: %s\n", args[1].c_str());
         }
     }
     
     file.close();
-    //std::getline(file, line);
 
     // too many tries
     if (std::atoi(this->nT.c_str()) > MAX_TRIES) {

@@ -94,6 +94,9 @@ void Command::logGame(std::string code, std::time_t now, std::time_t init) {
     timestamp.str("");
     timestamp.clear();
     if (code == "T") {
+        printf("args[3]: %s\n", args[3].c_str());
+        printf("args[6]: %s\n", args[6].c_str());
+        printf("T");
         time_t timeout = std::stoi(args[3]) + std::stoi(args[6]);
         timestamp << std::put_time(std::localtime(&timeout), "%d-%m-%Y %H:%M:%S");
         dst << timestamp.str() + " " + std::to_string(timeout) << std::endl;
