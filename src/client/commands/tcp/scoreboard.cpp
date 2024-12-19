@@ -112,8 +112,6 @@ void ScoreboardCommand::receive() {
 
 void ScoreboardCommand::handleReceive() {
 
-    printf("Received data: %s\n", this->data.c_str());
-
     std::istringstream iss(this->data);
     std::string arg;
     std::vector<std::string> args;
@@ -141,6 +139,8 @@ void ScoreboardCommand::handleReceive() {
         return;
     }
     
+    std::cout << "File stored in current directory - file name " + args[2] + " file size " + args[3] << std::endl;
+    
     printf("Scoreboard:\n");
 
     std::ifstream scoreboard(args[2]);
@@ -148,8 +148,6 @@ void ScoreboardCommand::handleReceive() {
         perror("Unable to open file");
         exit(1);
     }
-
-    std::cout << "File stored in current directory - file name " + args[2] + " file size " + args[3] << std::endl;
 
     std::string line;
     while (std::getline(scoreboard, line)) {

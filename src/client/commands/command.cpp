@@ -2,7 +2,6 @@
 
 void UDPCommand::send() {
     std::string dataToSend = this->formatData();
-    printf("Sending data: %s", dataToSend.c_str());
 
     if (sendto(this->client->udp_sockfd, dataToSend.c_str(), dataToSend.length(), 0,
         this->client->udp_res->ai_addr, this->client->udp_res->ai_addrlen) < 0) { 
@@ -15,7 +14,6 @@ int UDPCommand::execute() {
     if (this-> shouldSend()) {
         this->send();
         this->receive();
-        printf("Received data: %s\n", this->data.c_str());
         this->handleReceive();
     } 
     return this->command == EXIT ? 1 : 0;
@@ -52,7 +50,6 @@ void UDPCommand::receive() {
 void TCPCommand::send() {
 
     std::string dataToSend = this->formatData();
-    printf("Sending data: %s", dataToSend.c_str());
 
     if (write(this->client->tcp_sockfd, dataToSend.c_str(), dataToSend.length()) == ERROR) {
         perror("Error sending data");

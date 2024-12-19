@@ -43,8 +43,6 @@ void ShowTrialsCommand::receive() {
         status.append(buf, 1);
     }
 
-    printf("status:|%s|", status.c_str());
-
     if (strcmp(status.c_str(), NOK) == 0) {
         this->data = std::string(cmd) + " " + std::string(status);
         return;
@@ -112,8 +110,6 @@ void ShowTrialsCommand::receive() {
 }
 
 void ShowTrialsCommand::handleReceive() { // RST status [Fname Fsize Fdata]
-
-    printf("Received data: %s\n", this->data.c_str());
 
     std::istringstream iss(this->data);
     std::string arg;

@@ -62,7 +62,6 @@ std::string ShowTrialsCommand::exec() {
 
     std::string to_write = currentGame ? "Active game found for player " : "Last finalized game for player ";
 
-    printf("File name: %s\n", fileName.c_str());
     std::ifstream file(fileName);
     if (!file.is_open()) {
         perror("Unable to open file");
@@ -70,7 +69,6 @@ std::string ShowTrialsCommand::exec() {
     }
     std::getline(file, playerInfo);
     
-    printf("Player info: %s\n", playerInfo.c_str());
     fflush(stdout);
     std::istringstream iss(playerInfo);
     std::string arg;
