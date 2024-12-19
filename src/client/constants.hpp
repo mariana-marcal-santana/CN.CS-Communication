@@ -6,8 +6,6 @@
 #define SERVER_IP "localhost"
 #define SERVER_PORT "58052"
 #define CONNECTION_TIMEOUT 10
-#define MAX_FILE_SIZE 1024
-#define MAX_TCP_REPLY_SIZE 3 + 3 + 24 + 4 + MAX_FILE_SIZE + 1 + 5 // RSS + status + fname + fsize + fdata + <spaces>
 #define MAX_TRIES 8
 
 #define BUFFER_SIZE 128
@@ -47,6 +45,5 @@
 #define INVALID_COMMAND_MSG "Invalid command"
 #define UNPARSEABLE_MSG_SERVER "Unparseable message from server"
 #define WRONG_COMMAND_MSG_SERVER "Wrong command from server"
-#define HAS_STARTED_GAME "You have already started a game"
 
 #endif

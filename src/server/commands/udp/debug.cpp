@@ -12,7 +12,7 @@ bool DebugCommand::check() {
         return false;
     }
     if (!std::all_of(this->max_playtime.begin(), this->max_playtime.end(), ::isdigit) ||
-        std::stoi(this->max_playtime) < 1 || std::stoi(this->max_playtime) > CONNECTION_TIMEOUT) {
+        std::stoi(this->max_playtime) < 1 || std::stoi(this->max_playtime) > GAME_TIMEOUT) {
         return false;
     }
     return true;

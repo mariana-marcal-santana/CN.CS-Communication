@@ -18,10 +18,8 @@
 #include <iostream>
 #include <cstring>
 
-
 #include "constants.hpp"
 #include "commands/command.hpp"
 #include "commands/commandHandler.hpp"
-//#include "protocol/protocol.hpp"
 
 #endif

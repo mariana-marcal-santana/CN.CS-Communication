@@ -71,10 +71,8 @@ int main (int argc, char *argv[]) {
 
     FD_ZERO(&inputs);
     FD_SET(0, &inputs);
-    //FD_SET(udp, &inputs);
-    // FD_SET(tcp, &inputs);
     
-    // make sure the db directories exist
+    // init db
     std::filesystem::create_directories((std::string)DB_PATH);
     std::filesystem::create_directories((std::string)DB_GAMES_PATH);
     std::filesystem::create_directories((std::string)DB_SCORES_PATH);
@@ -148,14 +146,12 @@ int main (int argc, char *argv[]) {
 
                     addrlen = sizeof(tcp_useraddr);
                     newfd = accept(tcp, (struct sockaddr *) &tcp_useraddr, &addrlen);
-                    //while (newfd == -1 && errno == EINTR);
 
                     if (newfd == -1) {
                         perror("Accept error");
                         exit(1);
                     }
 
-                    // fork
                     if ((pid = fork()) == ERROR) {
                         perror("Fork error");
                         exit(1);
