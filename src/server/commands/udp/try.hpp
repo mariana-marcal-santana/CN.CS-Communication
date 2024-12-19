@@ -30,7 +30,7 @@ class TryCommand : public UDPCommand {
         std::string evalTry(std::string solution);
         std::string evalLogTry(std::string solution, std::string time);
         std::string calcScore(int tries, int seconds);
-        void logGame(std::string code, std::time_t now, std::time_t init);
+        //void logGame(std::string code, std::time_t now, std::time_t init);
         void logGame(std::string code, std::string colors, std::string mode, int tries, std::time_t now, std::time_t init);
 };
 

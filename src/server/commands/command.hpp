@@ -42,7 +42,7 @@ class Command
         virtual std::string exec() = 0;
         std::string findPlayerInfo(std::string plid);
         std::vector<std::string> getPlayerTries(std::string plid);
-        void logGame(std::string code, std::time_t now, std::time_t init);
+        void logGameG(std::string code, std::time_t now, std::time_t init);
         int createPlayerFile(std::string plid, char mode, std::string key, int time);
 };
 

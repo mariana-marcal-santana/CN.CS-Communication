@@ -37,7 +37,7 @@ std::string DebugCommand::exec() {
                 return "RDB NOK\n";
         }
         else { // game timeout - log game and make new one
-            this->logGame("T", now, std::stoi(args[6]));
+            this->logGameG("T", now, std::stoi(args[6]));
         }
     }
 

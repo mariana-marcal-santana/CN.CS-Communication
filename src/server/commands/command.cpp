@@ -61,7 +61,7 @@ std::vector<std::string> Command::getPlayerTries(std::string plid) {
     return tries;
 }
 
-void Command::logGame(std::string code, std::time_t now, std::time_t init) {
+void Command::logGameG(std::string code, std::time_t now, std::time_t init) {
 
     std::ostringstream timestamp;
     timestamp << std::put_time(std::localtime(&now), "%Y%m%d_%H%M%S_");
@@ -77,29 +77,27 @@ void Command::logGame(std::string code, std::time_t now, std::time_t init) {
         exit(1);
     }
 
-    std::string line;
     std::string firstLine;
+    std::string line;
     if (std::getline(src, firstLine)) {
-        dst << firstLine << std::endl;
+        dst << firstLine << std::endl; // save first line to get timestamps for timeout
     }
+
     while (std::getline(src, line)) {
         dst << line << std::endl;
     }
 
-    std::istringstream iss(firstLine);
-    std::vector<std::string> args;
-    std::string arg;
-    while (iss >> arg) { args.push_back(arg); }
-
     timestamp.str("");
     timestamp.clear();
     if (code == "T") {
-        printf("args[3]: %s\n", args[3].c_str());
-        printf("args[6]: %s\n", args[6].c_str());
-        printf("T");
+        // last line is the timestamp of the timeout
+        std::istringstream iss(firstLine);
+        std::vector<std::string> args;
+        std::string arg;
+        while (iss >> arg) { args.push_back(arg); }
         time_t timeout = std::stoi(args[3]) + std::stoi(args[6]);
         timestamp << std::put_time(std::localtime(&timeout), "%d-%m-%Y %H:%M:%S");
-        dst << timestamp.str() + " " + std::to_string(timeout) << std::endl;
+        dst << timestamp.str() + " " + std::to_string(timeout - init) << std::endl;
     }
     else {
         timestamp << std::put_time(std::localtime(&now), "%d-%m-%Y %H:%M:%S");

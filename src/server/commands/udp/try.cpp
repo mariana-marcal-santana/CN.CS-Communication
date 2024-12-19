@@ -43,61 +43,11 @@ std::string TryCommand::evalLogTry(std::string solution, std::string time) {
 
 
 
-void TryCommand::logGame(std::string code, std::time_t now, std::time_t init) {
 
-    std::ostringstream timestamp;
-    timestamp << std::put_time(std::localtime(&now), "%Y%m%d_%H%M%S_");
-
-    std::string srcFileName = (std::string)DB_GAMES_PATH + "/GAME_" + this->plid + ".txt";
-    std::ifstream src(srcFileName);
-
-    std::filesystem::create_directories((std::string)DB_GAMES_PATH + "/" + this->plid);
-    std::ofstream dst((std::string)DB_GAMES_PATH + "/" + this->plid + "/" + timestamp.str() + code + ".txt");
-
-    if (!src.is_open() || !dst.is_open()) {
-        std::perror("Error opening file(s)");
-        exit(1);
-    }
-
-    std::string firstLine;
-    std::string line;
-    if (std::getline(src, firstLine)) {
-        dst << firstLine << std::endl; // save first line to get timestamps for timeout
-    }
-
-    while (std::getline(src, line)) {
-        dst << line << std::endl;
-    }
-
-    timestamp.str("");
-    timestamp.clear();
-    if (code == "T") {
-        // last line is the timestamp of the timeout
-        std::istringstream iss(firstLine);
-        std::vector<std::string> args;
-        std::string arg;
-        while (iss >> arg) { args.push_back(arg); }
-        time_t timeout = std::stoi(args[3]) + std::stoi(args[6]);
-        timestamp << std::put_time(std::localtime(&timeout), "%d-%m-%Y %H:%M:%S");
-        dst << timestamp.str() + " " + std::to_string(timeout - init) << std::endl;
-    }
-    else {
-        timestamp << std::put_time(std::localtime(&now), "%d-%m-%Y %H:%M:%S");
-        dst << timestamp.str() + " " + std::to_string(now - init) << std::endl;
-    }
-
-    src.close();
-    dst.close();
-
-    if (std::remove(srcFileName.c_str()) == ERROR) {
-        std::perror("Error deleting file");
-        exit(1);
-    }
-}
 
 void TryCommand::logGame(std::string code, std::string colors, std::string mode, int tries, std::time_t now, std::time_t init) {
 
-    this->logGame(code, now, init);
+    this->logGameG(code, now, init);
 
     std::ostringstream timestamp;
     timestamp << std::put_time(std::localtime(&now), "_%d%m%Y_%H%M%S_");
@@ -153,7 +103,7 @@ std::string TryCommand::exec() {
 
     // game timeout
     if (now - std::stoi(args[6]) > std::stoi(args[3])) {
-        this->logGame("T", now, std::stoi(args[6]));
+        this->logGameG("T", now, std::stoi(args[6]));
         std::string result = "RTR ETM";
         for (size_t i = 0; i < args[2].length(); i++)
             result = result + " " + args[2][i];
@@ -178,7 +128,7 @@ std::string TryCommand::exec() {
 
     // too many tries
     if (std::atoi(this->nT.c_str()) > MAX_TRIES) {
-        this->logGame("F", now, std::stoi(args[6]));
+        this->logGameG("F", now, std::stoi(args[6]));
         std::string result = "RTR ENT";
         for (size_t i = 0; i < args[2].length(); i++)
             result = result + " " + args[2][i];
@@ -201,7 +151,7 @@ std::string TryCommand::exec() {
     std::string evalLogTry = this->evalLogTry(args[2], std::to_string(now - std::stoi(args[6])));
 
     if (std::atoi(this->nT.c_str()) == MAX_TRIES && strcmp(evalLogTry.c_str(), "4 0") != 0) {
-        this->logGame("F", now, std::stoi(args[6]));
+        this->logGameG("F", now, std::stoi(args[6]));
         std::string result = "RTR ENT";
         for (size_t i = 0; i < args[2].length(); i++)
             result = result + " " + args[2][i];

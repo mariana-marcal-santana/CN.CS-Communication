@@ -25,11 +25,7 @@ std::string ShowTrialsCommand::exec() {
         // game timeout
         std::time_t now = std::time(nullptr);
         if (now - std::stoi(args[6]) > std::stoi(args[3])) {
-            printf("now - std::stoi(args[6]): %ld\n", now - std::stoi(args[6]));
-            printf("std::stoi(args[3]): %d\n", std::stoi(args[3]));
-            printf("now : %ld\n", now);
-            printf("args[6]: %d\n", std::stoi(args[6]));
-            this->logGame("T", now, std::stoi(args[6]));
+            this->logGameG("T", now, std::stoi(args[6]));
         }
         else {
             fileName = (std::string)DB_GAMES_PATH + "/GAME_" + this->plid + ".txt";

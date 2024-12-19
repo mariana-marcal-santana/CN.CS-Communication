@@ -27,11 +27,11 @@ std::string QuitExitCommand::exec() {
 
     // game timeout
     if (now - std::stoi(args[6]) > std::stoi(args[3])) {
-        this->logGame("T", now, std::stoi(args[6]));
+        this->logGameG("T", now, std::stoi(args[6]));
         return "RQT NOK\n";
     }
 
-    this->logGame("Q", now, std::stoi(args[6]));
+    this->logGameG("Q", now, std::stoi(args[6]));
     
     std::string result = "RQT OK";
     for (size_t i = 0; i < args[2].length(); i++) {
