@@ -52,30 +52,36 @@ std::string ScoreboardCommand::exec() {
 
     std::string scoreboardFileName = (std::string)DB_PATH + fileName;
 
-    std::ofstream w_scoreboard(scoreboardFileName.c_str());
-    if (!w_scoreboard.is_open()) {
-        perror("Unable to open file (write)");
+    std::fstream file;
+    file.open(scoreboardFileName, std::ios::in | std::ios::out | std::ios::app);
+    if (!file.is_open()) {
+        perror("Unable to open file");
         exit(1);
     }
 
-    w_scoreboard << "-------------------------------- TOP 10 SCORES --------------------------------\n\n";
-    w_scoreboard << "                 SCORE PLAYER     CODE    NO TRIALS   MODE\n\n";
+    // std::ofstream w_scoreboard(scoreboardFileName.c_str());
+    // if (!w_scoreboard.is_open()) {
+    //     perror("Unable to open file (write)");
+    //     exit(1);
+    // }
+
+    file << "-------------------------------- TOP 10 SCORES --------------------------------\n\n";
+    file << "                 SCORE PLAYER     CODE    NO TRIALS   MODE\n\n";
 
     for (int i = 0; i < 10 && i < static_cast<int>(files.size()); i++)
-        w_scoreboard << this->formatScoreboardLine(i + 1, files[i].path()) << std::endl;
+        file << this->formatScoreboardLine(i + 1, files[i].path()) << std::endl;
 
-    w_scoreboard.close();
-
-    std::ifstream r_scoreboard(scoreboardFileName.c_str());
-    if (!r_scoreboard.is_open()) {
-        perror("Unable to open file (read)");
-        exit(1);
-    }
+    file.seekg(0);
+    // std::ifstream r_scoreboard(scoreboardFileName.c_str());
+    // if (!r_scoreboard.is_open()) {
+    //     perror("Unable to open file (read)");
+    //     exit(1);
+    // }
 
     std::stringstream content;
-    content << r_scoreboard.rdbuf();
+    content << file.rdbuf();
 
-    r_scoreboard.close();
+    file.close();
 
     auto size = std::filesystem::file_size(scoreboardFileName);
 
