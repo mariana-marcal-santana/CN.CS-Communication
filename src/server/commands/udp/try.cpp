@@ -41,10 +41,6 @@ std::string TryCommand::evalLogTry(std::string solution, std::string time) {
     return result;
 }
 
-
-
-
-
 void TryCommand::logGame(std::string code, std::string colors, std::string mode, int tries, std::time_t now, std::time_t init) {
 
     this->logGameG(code, now, init);
@@ -161,12 +157,12 @@ std::string TryCommand::exec() {
     // valid try
     file.clear();
     file.seekp(0, std::ios::end);
-    
+
     std::string evalTry = this->evalTry(args[2]);
     std::string write = "T: " + this->C1 + this->C2  + this->C3 + this->C4 + " " + evalTry + " " + std::to_string(now - std::stoi(args[6]));
     printf("write: %s\n", write.c_str());
     file << write << std::endl;
-    //std::string evalLogTry = this->evalLogTry(args[2], std::to_string(now - std::stoi(args[6])));
+
     file.close();
 
     if (std::atoi(this->nT.c_str()) == MAX_TRIES && strcmp(evalTry.c_str(), "4 0") != 0) {

@@ -59,12 +59,6 @@ std::string ScoreboardCommand::exec() {
         exit(1);
     }
 
-    // std::ofstream w_scoreboard(scoreboardFileName.c_str());
-    // if (!w_scoreboard.is_open()) {
-    //     perror("Unable to open file (write)");
-    //     exit(1);
-    // }
-
     file << "-------------------------------- TOP 10 SCORES --------------------------------\n\n";
     file << "                 SCORE PLAYER     CODE    NO TRIALS   MODE\n\n";
 
@@ -72,11 +66,6 @@ std::string ScoreboardCommand::exec() {
         file << this->formatScoreboardLine(i + 1, files[i].path()) << std::endl;
 
     file.seekg(0);
-    // std::ifstream r_scoreboard(scoreboardFileName.c_str());
-    // if (!r_scoreboard.is_open()) {
-    //     perror("Unable to open file (read)");
-    //     exit(1);
-    // }
 
     std::stringstream content;
     content << file.rdbuf();

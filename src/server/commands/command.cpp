@@ -80,7 +80,7 @@ void Command::logGameG(std::string code, std::time_t now, std::time_t init) {
     std::string firstLine;
     std::string line;
     if (std::getline(src, firstLine)) {
-        dst << firstLine << std::endl; // save first line to get timestamps for timeout
+        dst << firstLine << std::endl;
     }
 
     while (std::getline(src, line)) {
@@ -111,29 +111,4 @@ void Command::logGameG(std::string code, std::time_t now, std::time_t init) {
         std::perror("Error deleting file");
         exit(1);
     }
-}
-
-
-int Command::createPlayerFile(std::string plid, char mode, std::string key, int time){
-    std::string playerInfo;
-    std::string filename = "GAME_" + plid + ".txt";
-    std::string filepath = (std::string)DB_GAMES_PATH + "/" + filename; 
-
-    std::ofstream file(filepath);
-    if (!file.is_open()) {
-        std::cerr << "Unable to open file." << std::endl;
-        exit(1);
-    }
-
-    std::time_t sec = std::time(nullptr);
-    std::tm* localTime = std::localtime(&sec);
-
-    std::stringstream ss;
-    ss << std::put_time(localTime, "%Y-%m-%d %H:%M:%S");
-
-    playerInfo = plid + " " + mode + " " + key + " " + std::to_string(time) + " " + ss.str() + " " + std::to_string(sec) + "\n";
-    
-    file << playerInfo;
-    file.close();
-    return 0;
 }

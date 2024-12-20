@@ -43,7 +43,6 @@ class Command
         std::string findPlayerInfo(std::string plid);
         std::vector<std::string> getPlayerTries(std::string plid);
         void logGameG(std::string code, std::time_t now, std::time_t init);
-        int createPlayerFile(std::string plid, char mode, std::string key, int time);
 };
 
 class UDPCommand : public Command

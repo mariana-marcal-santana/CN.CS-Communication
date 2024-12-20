@@ -140,7 +140,6 @@ int main (int argc, char *argv[]) {
                         perror("Sendto error");
                         exit(1);
                     }
-                    //FD_CLR(udp, &inputs);
                 }
 
                 if (FD_ISSET(tcp, &testfds)) {
@@ -218,7 +217,6 @@ int main (int argc, char *argv[]) {
                     while (ret == ERROR && errno == EINTR);
                     if (ret == ERROR)
                         exit(1);
-                    //FD_CLR(tcp, &inputs);
                 }
         }
     }
@@ -227,6 +225,5 @@ int main (int argc, char *argv[]) {
     freeaddrinfo(tcp_res);
     close(udp);
     close(tcp);
-
     return 0;
 }
