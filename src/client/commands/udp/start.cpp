@@ -22,10 +22,13 @@ void StartCommand::handleReceive() { // RSG status
     }
     if (args[1] == NOK) { 
         this->client->playing = true;
+        this->client->plid = this->plid;
         std::cout << "There's already an ongoing game for this PLID." << std::endl;
     } 
     else if (args[1] == OK) {
         this->client->playing = true;
+        this->client->tries = 1;
+        this->client->plid = this->plid;
         std::cout << "New game has started!" << std::endl;
     }
     else if (args[1] == ERR) {
@@ -41,9 +44,9 @@ std::string StartCommand::formatData() {
 }
 
 bool StartCommand::shouldSend() {
-    bool res = this->client->plid != "";
-    if (!res) {
-        std::cout << "You must set a plid." << std::endl;
+    if (this->client->playing && this->client->plid != this->plid) {
+        std::cout << "There's already an ongoing game for this client." << std::endl;
+        return false;
     }
-    return res;
+    return true;
 }

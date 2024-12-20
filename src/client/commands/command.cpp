@@ -37,6 +37,12 @@ void UDPCommand::receive() {
     if (n < 0) {
         if (tv.tv_sec == CONNECTION_TIMEOUT) {
             perror("Connection timeout");
+            if (this->resend) {
+                this->resend = false;
+                printf("Resending...\n");
+                this->send();
+                this->receive();
+            }
             return;
         }
         perror("Error receiving data");

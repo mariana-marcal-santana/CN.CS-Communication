@@ -12,6 +12,7 @@ class Command
         int networkType;
         std::string command;
         std::string data;
+        bool resend;
 
     public:
         std::unique_ptr<Client> client;
@@ -20,11 +21,10 @@ class Command
             : command(command) {}
 
         Command(int networkType, std::string command) 
-            : networkType(networkType), command(command) {}
+            : networkType(networkType), command(command), resend(true) {}
 
         virtual ~Command() = default;
 
-        
         virtual void send() = 0;
         virtual int execute() = 0;
         virtual void receive() = 0;

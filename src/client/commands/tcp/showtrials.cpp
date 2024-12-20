@@ -140,6 +140,8 @@ void ShowTrialsCommand::handleReceive() { // RST status [Fname Fsize Fdata]
 
     this->client->playing = args[1] == ACT ? true : false;
 
+    std::cout << "File stored in current directory - file name " + args[2] + " file size " + args[3] << std::endl;
+
     printf("Trials:\n");
 
     std::ifstream trials(args[2]);
@@ -147,8 +149,6 @@ void ShowTrialsCommand::handleReceive() { // RST status [Fname Fsize Fdata]
         perror("Unable to open file");
         exit(1);
     }
-
-    std::cout << "File stored in current directory - file name " + args[2] + " file size " + args[3] << std::endl;
 
     std::string line;
     while (std::getline(trials, line)) {

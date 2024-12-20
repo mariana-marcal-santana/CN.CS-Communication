@@ -25,6 +25,7 @@ void QuitCommand::handleReceive() { // RQT status [C1 C2 C3 C4]
 
     if (args.size() == 2) {
         if (args[1] == NOK) {
+            this->client->playing = false;
             std::cout << "There isn't an ongoing game for this PLID." << std::endl;
         }
         else if (args[1] == ERR) {
