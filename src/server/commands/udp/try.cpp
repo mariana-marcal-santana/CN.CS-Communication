@@ -16,11 +16,28 @@ std::string TryCommand::calcScore(int tries, int seconds) {
 
 std::string TryCommand::evalTry(std::string solution) {
     std::string guess = this->C1 + this->C2 + this->C3 + this->C4;
-    for (size_t i = 0; i < solution.length(); i++) {
-        if (solution[i] == guess[i]) 
-            this->nB ++;
-        else if (solution.find(guess[i]) != std::string::npos)
-            this->nW ++;
+
+    std::vector<bool> codeMatched(solution.size(), false); // Tracks matched code positions
+    std::vector<bool> guessMatched(guess.size(), false); // Tracks matched guess positions
+
+    for (size_t i = 0; i < solution.size(); ++i) {
+        if (solution[i] == guess[i]) {
+            ++this->nB;
+            codeMatched[i] = true;
+            guessMatched[i] = true;
+        }
+    }
+
+    for (size_t i = 0; i < solution.size(); ++i) {
+        if (!codeMatched[i]) {
+            for (size_t j = 0; j < guess.size(); ++j) {
+                if (!guessMatched[j] && solution[i] == guess[j]) {
+                    ++this->nW;
+                    guessMatched[j] = true;
+                    break;
+                }
+            }
+        }
     }
     return std::to_string(this->nB) + " " + std::to_string(this->nW);
 }

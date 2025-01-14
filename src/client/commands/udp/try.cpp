@@ -38,7 +38,17 @@ void TryCommand::handleReceive() { // RTR status [nT nB nW][C1 C2 C3 C4]
     }
 
     else if (args.size() == 5) {
-        if (args[1] == OK) { 
+        if (args[1] == OK) {
+            if (std::stoi(args[2]) != this->client->tries) {
+                std::cout << "Wrong number of tries from server." << std::endl;
+                return;
+            }
+            else if (std::stoi(args[3]) < 0 || std::stoi(args[3]) > 4 ||
+                std::stoi(args[4]) < 0 || std::stoi(args[4]) > 4) {
+                std::cout << "Impossible number(s) of blacks and whites from server." << std::endl;
+                return;
+            }
+
             arg = args[2] + "T " + args[3] + "B " + args[4] + "W";
             std::cout << "Valid try: " << arg << std::endl;
             if (args[3].find("4") != std::string::npos) {
